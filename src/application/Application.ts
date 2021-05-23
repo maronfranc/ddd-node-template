@@ -1,10 +1,9 @@
-import express, { Express, Router } from "express"
-import { addMissingSlashToPath } from "../utils/formatRouteUrl";
-import { isFunction } from "../utils/isFunction";
-import { AuthController } from "./Auth/Auth";
-import { PATH_METADATA } from "./library/decorators/decorator.constants";
-import { IEndpoint } from "./library/IEndpoint";
-import { RequestMethod } from "./library/request-method";
+import express, { Express, Router } from 'express'
+import { addMissingSlashToPath } from '../utils/formatRouteUrl';
+import { isFunction } from '../utils/isFunction';
+import { PATH_METADATA } from './library/decorators/decorator.constants';
+import { IEndpoint } from './library/interfaces/IEndpoint';
+import { RequestMethod } from './library/interfaces/request-method';
 
 export class Application {
   private logger = console;
@@ -25,29 +24,29 @@ export class Application {
   }
   private mapEnumToFunctionName(methodEnum: RequestMethod): keyof Router {
     const map = new Map<RequestMethod, Partial<(keyof Router)>>([
-      [RequestMethod.GET, "get"],
-      [RequestMethod.POST, "post"],
-      [RequestMethod.PUT, "put"],
-      [RequestMethod.DELETE, "delete"],
-      [RequestMethod.PATCH, "patch"],
-      [RequestMethod.ALL, "use"],
+      [RequestMethod.GET, 'get'],
+      [RequestMethod.POST, 'post'],
+      [RequestMethod.PUT, 'put'],
+      [RequestMethod.DELETE, 'delete'],
+      [RequestMethod.PATCH, 'patch'],
+      [RequestMethod.ALL, 'use'],
     ]);
     const expressFunction = map.get(methodEnum);
     if (expressFunction === undefined) {
-      throw new Error("Method not implemented in map");
+      throw new Error('Method not implemented in map');
     }
     return expressFunction;
   }
   private loadRoutes(Controller: any) {
     const controller = new Controller();
-    let path = Reflect.getMetadata(PATH_METADATA, Controller) as IEndpoint['path'];
+    let path = Reflect.getMetadata(PATH_METADATA, Controller) as string;
     path = addMissingSlashToPath(path);
     const methodNames = Reflect.getMetadataKeys(controller);
-    this.logger.info(`Loading endpoint inside: ${path ? path : "<root>q"}`)
+    this.logger.info(`Loading endpoint inside: ${path ? path : '<root>'}`)
     for (const methodName of methodNames) {
       const route = Reflect.getMetadata(methodName, controller) as IEndpoint;
       const expressFunctionName = this.mapEnumToFunctionName(route.method);
-      this.logger.info("- Endpoint loaded:", route.path ? route.path : "<root>");
+      this.logger.info('- Endpoint loaded:', route.path ? route.path : '<root>');
       if (!isFunction(this.router[expressFunctionName])) {
         throw new Error(
           `Error loading express function.
@@ -56,8 +55,15 @@ export class Application {
           3. Check if method enum is correctly listed in function map.
           `);
       }
-      // TODO: add middlewaress  
-      (this.router[expressFunctionName] as CallableFunction)(route.path, controller[methodName]);
+      if (Array.isArray(route.middlewares) && route.middlewares.length >= 1) {
+        (this.router[expressFunctionName] as CallableFunction)(
+          route.path,
+          route.middlewares,
+          controller[methodName]
+        );
+      } else {
+        (this.router[expressFunctionName] as CallableFunction)(route.path, controller[methodName]);
+      }
     }
     this.app.use(addMissingSlashToPath(path), this.router);
   }

@@ -1,16 +1,23 @@
-import { IEndpoint } from "../IEndpoint";
-import { RequestMethod } from "../request-method";
-import { PATH_METADATA, METHOD_METADATA } from "./decorator.constants";
+import { Middleware } from '../../Express.interfaces';
+import { IEndpoint } from '../interfaces/IEndpoint';
+import { RequestMethod } from '../interfaces/request-method';
+import { PATH_METADATA, METHOD_METADATA, MIDDLEWARE_METADATA } from './decorator.constants';
 
 export interface RequestMappingMetadata {
   path?: string;
   method?: RequestMethod;
+  middlewares?: Middleware[];
+}
+interface IRequestMappingOptions {
+  path?: string;
+  middlewares?: Middleware[];
 }
 export const RequestMapping = (
   metadata: RequestMappingMetadata
 ): MethodDecorator => {
   const path = metadata[PATH_METADATA]!;
   const method = metadata[METHOD_METADATA]!;
+  const middlewares = metadata[MIDDLEWARE_METADATA]!;
   return (
     target: object,
     key: string | symbol,
@@ -18,18 +25,27 @@ export const RequestMapping = (
   ) => {
     const endpoint: IEndpoint = {
       path,
-      method
+      method,
+      middlewares
     };
     Reflect.defineMetadata(key, endpoint, target);
     return descriptor;
   };
 };
 const createMappingDecorator = (method: IEndpoint['method']) => (
-  path: IEndpoint['path'] = "",
+  options: IEndpoint['path'] | IRequestMappingOptions = '',
 ): MethodDecorator => {
+  if (typeof options === 'string') {
+    return RequestMapping({
+      [PATH_METADATA]: options,
+      [METHOD_METADATA]: method,
+      [MIDDLEWARE_METADATA]: [],
+    });
+  }
   return RequestMapping({
-    [PATH_METADATA]: path,
+    [PATH_METADATA]: options.path ?? '',
     [METHOD_METADATA]: method,
+    [MIDDLEWARE_METADATA]: options.middlewares ?? [],
   });
 };
 export const Post = createMappingDecorator(RequestMethod.POST);
@@ -40,23 +56,3 @@ export const Patch = createMappingDecorator(RequestMethod.PATCH);
 export const Options = createMappingDecorator(RequestMethod.OPTIONS);
 export const Head = createMappingDecorator(RequestMethod.HEAD);
 export const All = createMappingDecorator(RequestMethod.ALL);
-
-// /** @see https://stackoverflow.com/questions/42281045/can-typescript-property-decorators-set-metadata-for-the-class */
-// export const MyPropertyDecorator = (endpoint: string): MethodDecorator => {
-//   return (target, key, aaa) => {
-//     console.log(" | ----- ----- | target | ----- ----- | ", typeof target);
-//     console.log(target);
-//     console.log(" | _____ _____ | target | _____ _____ | ", typeof target);
-//     console.log(" | ----- ----- | property | ----- ----- | ", typeof key);
-//     console.log(key);
-//     console.log(" | _____ _____ | property | _____ _____ | ", typeof key);
-//     console.log(" | ----- ----- | aaa | ----- ----- | ", typeof aaa);
-//     console.log(aaa);
-//     console.log(" | _____ _____ | aaa | _____ _____ | ", typeof aaa);
-//     var classConstructor = target.constructor;
-//     console.log('property target: ', classConstructor);
-//     const metadata = Reflect.getMetadata(key, classConstructor) || {};
-//     metadata[key] = endpoint;
-//     Reflect.defineMetadata(key, metadata, classConstructor);
-//   };
-// };
