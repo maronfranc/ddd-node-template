@@ -5,11 +5,15 @@ import { PATH_METADATA } from './library/decorators/decorator.constants';
 import { IEndpoint } from './library/interfaces/IEndpoint';
 import { RequestMethod } from './library/interfaces/request-method';
 
+type IController = {
+  new(): any
+};
+
 export class Application {
   private logger = console;
   private app: Express;
   private router: Router;
-  private Controllers = [];
+  private Controllers: IController[] = [];
   public constructor() {
     this.app = express();
     this.router = express.Router();
@@ -42,11 +46,12 @@ export class Application {
     let path = Reflect.getMetadata(PATH_METADATA, Controller) as string;
     path = addMissingSlashToPath(path);
     const methodNames = Reflect.getMetadataKeys(controller);
-    this.logger.info(`Loading endpoint inside: ${path ? path : '<root>'}`)
+    this.logger.info(`Loading endpoints: ${path ? path : '<root>'}`)
     for (const methodName of methodNames) {
       const route = Reflect.getMetadata(methodName, controller) as IEndpoint;
       const expressFunctionName = this.mapEnumToFunctionName(route.method);
-      this.logger.info('- Endpoint loaded:', route.path ? route.path : '<root>');
+      const routePath = addMissingSlashToPath(route.path);
+      this.logger.info(`  - Endpoint loaded:, ${path}${routePath ? routePath : '<root>'}`);
       if (!isFunction(this.router[expressFunctionName])) {
         throw new Error(
           `Error loading express function.
@@ -57,12 +62,12 @@ export class Application {
       }
       if (Array.isArray(route.middlewares) && route.middlewares.length >= 1) {
         (this.router[expressFunctionName] as CallableFunction)(
-          route.path,
+          routePath,
           route.middlewares,
           controller[methodName]
         );
       } else {
-        (this.router[expressFunctionName] as CallableFunction)(route.path, controller[methodName]);
+        (this.router[expressFunctionName] as CallableFunction)(routePath, controller[methodName]);
       }
     }
     this.app.use(addMissingSlashToPath(path), this.router);
