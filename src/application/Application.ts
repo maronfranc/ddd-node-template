@@ -1,6 +1,6 @@
 import express, { Express, Router } from 'express'
-import { addMissingSlashToPath } from '../utils/formatRouteUrl';
-import { isFunction } from '../utils/isFunction';
+import { addMissingSlashToPath } from './utils/formatRouteUrl';
+import { isFunction } from './utils/isFunction';
 import { ExampleController } from './controller/Example.controller';
 import { PATH_METADATA } from './library/decorators/decorator.constants';
 import { IEndpoint } from './library/interfaces/IEndpoint';
