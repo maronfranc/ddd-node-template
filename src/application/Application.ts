@@ -1,6 +1,5 @@
 import express, { Express, Router } from 'express'
 import { addMissingSlashToPath } from './utils/formatRouteUrl';
-import { isFunction } from './utils/isFunction';
 import { ExampleController } from './controller/Example.controller';
 import { PATH_METADATA } from './library/decorators/decorator.constants';
 import { IEndpoint } from './library/interfaces/IEndpoint';
@@ -29,6 +28,14 @@ export class Application {
       this.loadRoutes(Controller);
     }
   }
+  public middlewares() {
+    this.app.use(express.json())
+    this.app.use(express.urlencoded({ extended: true }));
+  }
+  public init() {
+    this.middlewares();
+    this.routes();
+  }
   private mapEnumToFunctionName(methodEnum: RequestMethod): keyof Router {
     const map = new Map<RequestMethod, Partial<(keyof Router)>>([
       [RequestMethod.GET, 'get'],
@@ -54,8 +61,8 @@ export class Application {
       const route = Reflect.getMetadata(methodName, controller) as IEndpoint;
       const expressFunctionName = this.mapEnumToFunctionName(route.method);
       const routePath = addMissingSlashToPath(route.path);
-      this.logger.info(`  - Endpoint loaded:, ${path}${routePath ? routePath : '<root>'}`);
-      if (!isFunction(this.router[expressFunctionName])) {
+      this.logger.info(`  - Endpoint |${expressFunctionName}| loaded: ${path}${routePath ? routePath : '<root>'}`);
+      if (typeof this.router[expressFunctionName] !== "function") {
         throw new Error(
           `Error loading express function.
           1. Variable "${expressFunctionName}" need to be an express function.
