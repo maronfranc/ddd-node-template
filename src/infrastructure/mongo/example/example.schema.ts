@@ -1,4 +1,5 @@
 import { Model, model, Schema } from 'mongoose'
+import { EXAMPLE_SUB_REF_REF_NAME } from '../example-sub-ref';
 import { IExample, IExampleDocument } from './example.interface';
 
 export const EXAMPLE_REF_NAME = 'Example';
@@ -17,6 +18,8 @@ const schemaDefinition: Record<keyof IExample, any> = {
     type: String,
     required: true,
   },
+  // Refs
+  subDocument: { type: Schema.Types.ObjectId, ref: EXAMPLE_SUB_REF_REF_NAME },
 }
 const ExampleSchema = new Schema<IExampleDocument, Model<IExampleDocument>>(schemaDefinition);
 ExampleSchema.pre<IExampleDocument>('save', async function (this: any) {
