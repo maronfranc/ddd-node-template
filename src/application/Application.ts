@@ -56,12 +56,12 @@ export class Application {
     let path = Reflect.getMetadata(PATH_METADATA, Controller) as string;
     path = addMissingSlashToPath(path);
     const methodNames = Reflect.getMetadataKeys(controller);
-    this.logger.info(`Loading endpoints: ${path ? path : '<root>'}`)
+    this.logger.info(`- Loading routes: ${path ? path : '<root>'}`)
     for (const methodName of methodNames) {
       const route = Reflect.getMetadata(methodName, controller) as IEndpoint;
       const expressFunctionName = this.mapEnumToFunctionName(route.method);
       const routePath = addMissingSlashToPath(route.path);
-      this.logger.info(`  - Endpoint |${expressFunctionName}| loaded: ${path}${routePath ? routePath : '<root>'}`);
+      this.logger.info(`\t- Endpoint |${expressFunctionName}| loaded: ${path}${routePath ? routePath : '<root>'}`);
       if (typeof this.router[expressFunctionName] !== "function") {
         throw new Error(
           `Error loading express function.
