@@ -1,6 +1,7 @@
 import express, { Express, Router } from 'express'
 import { addMissingSlashToPath } from './utils/formatRouteUrl';
-import { ExampleController } from './controller/Example.controller';
+import { AuthController } from './controller/auth/Auth.controller';
+import { ExampleController } from './controller/example/Example.controller';
 import { PATH_METADATA } from './library/decorators/decorator.constants';
 import { IEndpoint } from './library/interfaces/IEndpoint';
 import { RequestMethod } from './library/interfaces/request-method';
@@ -14,7 +15,8 @@ export class Application {
   private app: Express;
   private router: Router;
   private Controllers: IController[] = [
-    ExampleController
+    ExampleController,
+    AuthController
   ];
   public constructor() {
     this.app = express();

@@ -1,15 +1,14 @@
-import { IUserSensitiveData } from '../../../domain/auth/interfaces/IUserSensitiveData';
 import { BaseRepository } from '../Base.repository';
 import { IObjectBoolean } from '../interfaces/object-boolean.interface';
-import { IUser } from './interfaces/user.interface';
+import { IUserModel, IUserSensitiveData } from './interfaces/user.interface';
 import UserSchema from './user.schema';
 
-export class UserRepository extends BaseRepository<IUser> {
+export class UserRepository extends BaseRepository<IUserModel> {
   constructor() {
     super(UserSchema);
   }
-  public async findSensitiveData(email: string): Promise<Pick<IUser, "email"> & IUserSensitiveData> {
-    const select = <IObjectBoolean<IUser>>{
+  public async findSensitiveData(email: string): Promise<Pick<IUserModel, "email"> & IUserSensitiveData> {
+    const select = <IObjectBoolean<IUserModel>>{
       email: true,
       salt: true,
       password: true

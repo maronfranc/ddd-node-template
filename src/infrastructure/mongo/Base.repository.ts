@@ -4,7 +4,8 @@ import { IBaseModel } from "./Base.interface";
 export abstract class BaseRepository<T extends Partial<IBaseModel>>  {
   constructor(protected readonly BaseModel: Model<Document>) { }
   public async create(item: T): Promise<T> {
-    return this.BaseModel.create(item) as unknown as Promise<T>;
+    const newDocument = await this.BaseModel.create(item);
+    return newDocument.toJSON() as unknown as Promise<T>;
   }
   public async updateOne(id: string, item: Partial<T>): Promise<boolean> {
     const _id = Types.ObjectId(id);
