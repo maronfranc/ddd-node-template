@@ -9,7 +9,7 @@ export const jsonSchema = {
   password: {
     name: 'password',
     type: 'string',
-    minLength: 6
+    minLength: 6,
   },
   // Header
   authorization: {

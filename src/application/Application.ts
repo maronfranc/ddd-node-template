@@ -1,18 +1,21 @@
-import express, { Express, Router } from 'express'
-import { addMissingSlashToPath } from './utils/formatRouteUrl';
+import express, { Express, Router } from 'express';
+import { DomainException } from '../domain/library/domain.exception';
 import { AuthController } from './controller/auth/Auth.controller';
 import { ExampleController } from './controller/example/Example.controller';
+import { Next, Req, Res } from './Express.interfaces';
+import { HttpStatus } from './http/http-status.enum';
 import { PATH_METADATA } from './library/decorators/decorator.constants';
 import { IEndpoint } from './library/interfaces/IEndpoint';
 import { RequestMethod } from './library/interfaces/request-method';
+import { addMissingSlashToPath } from './utils/formatRouteUrl';
 
 type IController = {
   new(): any
 };
 
 export class Application {
+  public app: Express;
   private logger = console;
-  private app: Express;
   private router: Router;
   private Controllers: IController[] = [
     ExampleController,
@@ -25,18 +28,18 @@ export class Application {
   public listen(port: number, callback: () => void) {
     this.app.listen(port, callback);
   }
-  public routes() {
+  public init() {
+    this.app.use(express.json())
+    this.app.use(express.urlencoded({ extended: true }));
+    this.routes();
+    this.app.use((error: DomainException, req: Req, res: Res, next: Next) => {
+      return res.status(HttpStatus[error.statusName]).json(error);
+    });
+  }
+  private routes() {
     for (const Controller of this.Controllers) {
       this.loadRoutes(Controller);
     }
-  }
-  public middlewares() {
-    this.app.use(express.json())
-    this.app.use(express.urlencoded({ extended: true }));
-  }
-  public init() {
-    this.middlewares();
-    this.routes();
   }
   private mapEnumToFunctionName(methodEnum: RequestMethod): keyof Router {
     const map = new Map<RequestMethod, Partial<(keyof Router)>>([
