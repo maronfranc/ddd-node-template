@@ -7,16 +7,15 @@ const schemaDefinition: Record<keyof IUserModel, any> = {
     type: Date,
     required: false,
     default: new Date().toISOString(),
+    select: false,
   },
   updatedAt: {
     type: Date,
     required: false,
     default: new Date().toISOString(),
+    select: false,
   },
-  email: {
-    type: String,
-    required: true,
-  },
+  email: { type: String, required: true },
   password: {
     type: String,
     required: true,

@@ -1,10 +1,10 @@
 import { IUser, IUserModel, UserRepository } from '../../infrastructure/mongo/user';
-import { CryptoService } from './Crypto.service';
-import { TokenService } from './Token.service';
-import { ICredentials } from "./interfaces/ICredentials";
 import { DomainException } from '../library/domain.exception';
-import { authException } from './auth.exception';
 import { userException } from '../user/user.exception';
+import { authException } from './auth.exception';
+import { CryptoService } from './Crypto.service';
+import { ICredentials } from "./interfaces/ICredentials";
+import { TokenService } from './Token.service';
 
 export class AuthService {
   public async registerUser(user: IUserModel): Promise<IUser> {
@@ -31,6 +31,10 @@ export class AuthService {
     const tokenService = new TokenService();
     const token = await tokenService.generateToken({ ...user });
     return { token };
+  }
+  public async generateToken(user: IUser) {
+    const tokenService = new TokenService();
+    return tokenService.generateToken(user);
   }
   private async handleLoginSensitiveData(
     userRepository: UserRepository,

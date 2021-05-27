@@ -1,5 +1,6 @@
 import { AuthService } from '../../../domain/auth/Auth.service';
 import { Next, Req, ReqAuthorized, Res } from '../../Express.interfaces';
+import { HttpStatus } from '../../http/http-status.enum';
 import { Controller, Get, Post } from '../../library/decorators';
 import { AuthGuard } from './Auth.guard';
 import { LoginDto, RegisterUserDto } from './dto';
@@ -20,7 +21,11 @@ export class AuthController {
           lastName: user.lastName,
         }
       });
-      return res.status(200).send(registeredUser);
+      const token = await authService.generateToken(registeredUser);
+      return res.status(HttpStatus.CREATED).send({
+        token: token,
+        user: registeredUser
+      });
     } catch (err) {
       next(err);
     }
@@ -31,7 +36,7 @@ export class AuthController {
       const loginCredential = new LoginDto(req.body);
       const authService = new AuthService();
       const login = await authService.login({ ...loginCredential });
-      return res.status(200).send(login);
+      return res.status(HttpStatus.OK).send(login);
     } catch (err) {
       next(err)
     }
@@ -41,7 +46,7 @@ export class AuthController {
     middlewares: [AuthGuard.middleware]
   })
   public async token(req: ReqAuthorized, res: Res) {
-    return res.status(200).send({
+    return res.status(HttpStatus.OK).send({
       user: req.user
     });
   }
