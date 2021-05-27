@@ -1,4 +1,5 @@
 import { TokenService } from "../../../domain/auth";
+import { headerException } from "../../../domain/library/header.exception";
 import { IUser } from "../../../infrastructure/mongo/user";
 import { Next, ReqAuthorized, Res } from "../../Express.interfaces";
 
@@ -9,9 +10,9 @@ export class AuthGuard {
     next: Next
   ) {
     const bearerToken = req.header('authorization');
-    if (!bearerToken) return res.status(401).json({
-      error: 'Authorization required'
-    });
+    if (!bearerToken) {
+      return res.status(401).json(headerException["bearer-token-not-provided"]);
+    }
     try {
       const tokenService = new TokenService();
       const [, token] = bearerToken.split(' ');

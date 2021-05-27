@@ -2,13 +2,16 @@ import { IUser, IUserModel, UserRepository } from '../../infrastructure/mongo/us
 import { CryptoService } from './Crypto.service';
 import { TokenService } from './Token.service';
 import { ICredentials } from "./interfaces/ICredentials";
+import { DomainException } from '../library/domain.exception';
+import { authException } from './auth.exception';
+import { userException } from '../user/user.exception';
 
 export class AuthService {
   public async registerUser(user: IUserModel): Promise<IUser> {
-    if (!user.password) throw new Error('Missing password');
+    if (!user.password) throw new DomainException(authException['invalid-password']);
     const userRepository = new UserRepository();
     const emailExists = await userRepository.exists({ email: user.email });
-    if (emailExists) throw new Error('Email already exists');
+    if (emailExists) throw new DomainException(authException['email-already-exists']);
     const cryptoService = new CryptoService();
     const salt = await cryptoService.genSalt();
     const password = await cryptoService.hash(user.password, salt);
@@ -23,7 +26,8 @@ export class AuthService {
     password = null;
     const user = await userRepository.findOne({
       email
-    }) as any;
+    });
+    if (user === null) throw new DomainException(userException['user-by-email-not-found']);
     const tokenService = new TokenService();
     const token = await tokenService.generateToken({ ...user });
     return { token };
@@ -33,18 +37,18 @@ export class AuthService {
     email: string,
     unhashedPassword: string | null
   ): Promise<void | never> {
-    if (!unhashedPassword) throw new Error('Invalid credentitals');
+    if (!unhashedPassword) throw new DomainException(authException['invalid-credentials']);
     let userWithSensitiveData = await userRepository.findSensitiveData(email);
-    if (!userWithSensitiveData) throw new Error('User not found');
+    if (!userWithSensitiveData) throw new DomainException(authException['user-email-not-found']);
     if (!userWithSensitiveData.password || !userWithSensitiveData.salt) {
-      throw new Error('Internal server error');
+      throw new DomainException();
     }
     const cryptoService = new CryptoService();
     const isPasswordCorrect = await cryptoService.compareUserPasswords(
       unhashedPassword,
       userWithSensitiveData
     );
-    if (!isPasswordCorrect) throw new Error('Invalid credentials');
+    if (!isPasswordCorrect) throw new DomainException(authException['invalid-credentials']);
     unhashedPassword = null;
     this.deleteUserSensitiveData(userWithSensitiveData);
   }
