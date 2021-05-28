@@ -1,5 +1,5 @@
 import { Model, model, Schema } from 'mongoose';
-import { IUserModel, IUserDocument } from './interfaces/user.interface';
+import { IUserDocument, IUserModel } from './interfaces/user.interface';
 
 export const USER_REF_NAME = 'User';
 const schemaDefinition: Record<keyof IUserModel, any> = {
@@ -29,6 +29,11 @@ const schemaDefinition: Record<keyof IUserModel, any> = {
   person: {
     firstName: { type: String, required: true },
     lastName: { type: String, required: true },
+    birthDate: {
+      type: Date,
+      required: true,
+      select: false,
+    },
     cpf: {
       type: String,
       required: false,

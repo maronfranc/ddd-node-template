@@ -19,6 +19,7 @@ export class AuthController {
         person: {
           firstName: user.firstName,
           lastName: user.lastName,
+          birthDate: user.birthDate,
         }
       });
       const token = await authService.generateToken(registeredUser);

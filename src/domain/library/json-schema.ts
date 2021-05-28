@@ -1,16 +1,7 @@
+import { authJsonSchema } from "../auth/auth-json-schema";
+
 export const jsonSchema = {
-  // Body
-  /** user email */
-  email: {
-    name: 'email',
-    type: 'string',
-  },
-  /** user password */
-  password: {
-    name: 'password',
-    type: 'string',
-    minLength: 6,
-  },
+  auth: authJsonSchema,
   // Header
   authorization: {
     name: 'authorization',
