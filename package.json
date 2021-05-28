@@ -5,7 +5,8 @@
   "license": "MIT",
   "scripts": {
     "start:dev": "BUILD=dev nodemon src/index.ts",
-    "build": "tsc --project ./"
+    "build": "tsc --project ./",
+    "test": "BUILD=dev jest --forceExit"
   },
   "dependencies": {
     "bcrypt": "^5.0.1",
@@ -19,13 +20,33 @@
     "@types/bcrypt": "^5.0.0",
     "@types/cors": "^2.8.10",
     "@types/express": "^4.17.11",
+    "@types/jest": "^26.0.23",
     "@types/jsonwebtoken": "^8.5.1",
     "@types/mongodb": "^3.6.16",
     "@types/mongoose": "^5.10.5",
     "@types/node": "^15.6.0",
+    "@types/supertest": "^2.0.11",
+    "jest": "^27.0.1",
+    "jest-extended": "^0.11.5",
+    "mongodb-memory-server": "^6.9.6",
     "nodemon": "^2.0.7",
     "reflect-metadata": "^0.1.13",
+    "supertest": "^6.1.3",
+    "ts-jest": "^27.0.1",
     "ts-node": "^9.1.1",
     "typescript": "^4.2.4"
+  },
+  "jest": {
+    "preset": "ts-jest",
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "bail": true,
+    "errorOnDeprecated": false,
+    "verbose": true,
+    "testEnvironment": "node",
+    "modulePathIgnorePatterns": [
+      "<rootDir>/dist/"
+    ]
   }
 }
