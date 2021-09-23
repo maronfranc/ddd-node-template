@@ -2,23 +2,17 @@ import { MongoMemoryServer } from "mongodb-memory-server";
 import mongoose from 'mongoose';
 
 export class MongoDbMemory {
-  private mongod: MongoMemoryServer;
-  public constructor() {
-    this.mongod = new MongoMemoryServer();
-  }
+  private mongod: MongoMemoryServer | null = null;
   public async connect() {
-    const uri = await this.mongod.getUri();
-    await mongoose.connect(uri, <mongoose.ConnectOptions>{
-      useNewUrlParser: true,
-      autoReconnect: true,
-      reconnectTries: Number.MAX_VALUE,
-      reconnectInterval: 1000,
-      useUnifiedTopology: true,
-    });
+    if (this.mongod === null) {
+      this.mongod = await MongoMemoryServer.create();
+    }
+    const uri = this.mongod.getUri();
+    await mongoose.connect(uri);
   }
   public async closeDatabase() {
     await mongoose.connection.dropDatabase();
     await mongoose.connection.close();
-    await this.mongod.stop();
+    if (this.mongod !== null) await this.mongod.stop();
   }
 }

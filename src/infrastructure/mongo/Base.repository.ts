@@ -8,7 +8,7 @@ export abstract class BaseRepository<T extends Partial<IBaseModel>>  {
     return newDocument.toJSON() as unknown as Promise<T>;
   }
   public async updateOne(id: string, item: Partial<T>): Promise<boolean> {
-    const _id = Types.ObjectId(id);
+    const _id = new Types.ObjectId(id);
     try {
       await this.BaseModel.updateOne({ _id }, item).exec();
       return true;
@@ -17,7 +17,7 @@ export abstract class BaseRepository<T extends Partial<IBaseModel>>  {
     }
   }
   public async delete(id: string): Promise<boolean> {
-    const _id = Types.ObjectId(id);
+    const _id = new Types.ObjectId(id);
     try {
       await this.BaseModel.remove({ _id }).exec();
       return true;
@@ -26,7 +26,7 @@ export abstract class BaseRepository<T extends Partial<IBaseModel>>  {
     }
   }
   public async findById(id: string): Promise<T | null> {
-    const _id = Types.ObjectId(id);
+    const _id = new Types.ObjectId(id);
     return this.BaseModel
       .findById(_id)
       .lean()

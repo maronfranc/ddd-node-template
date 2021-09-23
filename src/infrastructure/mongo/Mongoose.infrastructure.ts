@@ -8,11 +8,7 @@ const emptyCallback = () => { };
 export class MongooseInfrastructure {
   public constructor() { }
   public connect(opts?: IConnectOptions) {
-    mongoose.connect(MONGO_URL, {
-      useUnifiedTopology: true,
-      useNewUrlParser: true,
-      useCreateIndex: true
-    });
+    mongoose.connect(MONGO_URL);
     mongoose.connection.on('connected', opts?.onConnected ?? emptyCallback);
     mongoose.connection.on('error', opts?.onError ?? emptyCallback);
     process.on('SIGINT', () => {
