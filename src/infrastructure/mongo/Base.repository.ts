@@ -1,4 +1,4 @@
-import { Types, Model, Document } from "mongoose";
+import { Document, Model, Types } from "mongoose";
 import { IBaseModel } from "./Base.interface";
 
 export abstract class BaseRepository<T extends Partial<IBaseModel>>  {

@@ -1,7 +1,7 @@
 import {
+    NextFunction as ExpressNextFunction,
     Request as ExpressRequest,
-    Response as ExpressResponse,
-    NextFunction as ExpressNextFunction
+    Response as ExpressResponse
 } from "express";
 import { IUser } from "../infrastructure/mongo/user";
 

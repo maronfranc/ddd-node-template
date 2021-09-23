@@ -1,2 +1,2 @@
-export * from './mongo';
 export * from './Infrastructure';
+export * from './mongo';

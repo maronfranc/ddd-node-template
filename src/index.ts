@@ -1,4 +1,4 @@
-import 'reflect-metadata'
+import 'reflect-metadata';
 import { Application } from './application/Application';
 import { Infrastructure } from './infrastructure';
 

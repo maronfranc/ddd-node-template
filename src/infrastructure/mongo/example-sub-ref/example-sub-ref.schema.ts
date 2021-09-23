@@ -1,4 +1,4 @@
-import { Model, model, Schema } from 'mongoose'
+import { Model, model, Schema } from 'mongoose';
 import { IExampleSubRefBaseDocument, IExampleSubRefDocument } from './example-sub-ref.interface';
 
 export const EXAMPLE_SUB_REF_REF_NAME = 'ExampleSubRef';

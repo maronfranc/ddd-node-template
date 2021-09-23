@@ -1,7 +1,7 @@
 import { Middleware } from '../../Express.interfaces';
 import { IEndpoint } from '../interfaces/IEndpoint';
 import { RequestMethod } from '../interfaces/request-method';
-import { PATH_METADATA, METHOD_METADATA, MIDDLEWARE_METADATA } from './decorator.constants';
+import { METHOD_METADATA, MIDDLEWARE_METADATA, PATH_METADATA } from './decorator.constants';
 
 export interface RequestMappingMetadata {
   path?: string;

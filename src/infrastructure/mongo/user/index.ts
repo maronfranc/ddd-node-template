@@ -1,4 +1,4 @@
-export * from './interfaces/user.interface';
 export * from './interfaces/person.interface';
-export * from './user.schema';
+export * from './interfaces/user.interface';
 export * from './user.repository';
+export * from './user.schema';
