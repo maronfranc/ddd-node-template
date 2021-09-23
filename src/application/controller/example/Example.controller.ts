@@ -1,5 +1,5 @@
 import { ExampleService } from "../../../domain/example/Example.service";
-import { Req, Res } from "../../Express.interfaces";
+import { Req, Res } from "../../express/Express.interfaces";
 import { Controller } from "../../library/decorators/controller.decorator";
 import { Get, Post } from "../../library/decorators/request-mapping.decorator";
 

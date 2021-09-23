@@ -1,7 +1,7 @@
 import { TokenService } from "../../../domain/auth";
 import { headerException } from "../../../domain/library/header.exception";
 import { IUser } from "../../../infrastructure/mongo/user";
-import { Next, ReqAuthorized, Res } from "../../Express.interfaces";
+import { Next, ReqAuthorized, Res } from "../../express/Express.interfaces";
 
 export class AuthGuard {
   static middleware(

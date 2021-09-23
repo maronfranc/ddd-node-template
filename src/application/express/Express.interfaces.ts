@@ -3,7 +3,7 @@ import {
     Request as ExpressRequest,
     Response as ExpressResponse
 } from "express";
-import { IUser } from "../infrastructure/mongo/user";
+import { IUser } from "../../infrastructure/mongo/user/interfaces/user.interface";
 
 export type Req<Params = any, Body = any, Query = any> = ExpressRequest<Params, Body, Query>;
 export type Res<ResBody = any, Locals = Record<string, any>> = ExpressResponse;
