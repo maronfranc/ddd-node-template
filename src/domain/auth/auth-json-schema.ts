@@ -4,7 +4,7 @@ export const authJsonSchema = {
   email: {
     name: 'email',
     type: 'string',
-    pattern: REGEX_EMAIL
+    pattern: REGEX_EMAIL.toString()
   },
   /** user password */
   password: {

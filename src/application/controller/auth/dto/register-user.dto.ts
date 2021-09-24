@@ -19,7 +19,7 @@ export class RegisterUserDto implements IRegisterUserDto {
   public birthDate: IRegisterUserDto['birthDate'];
   public constructor(user: IRegisterUserDto) {
     this.email = user.email.trim().toLowerCase();
-    if (!jsonSchema.auth.email.pattern.test(this.email)) {
+    if (!new RegExp(jsonSchema.auth.email.pattern).test(this.email)) {
       throw new DomainException(authException['invalid-credentials']);
     }
     if (
