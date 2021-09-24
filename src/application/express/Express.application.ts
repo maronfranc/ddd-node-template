@@ -32,14 +32,21 @@ export class ExpressApplication {
     this.app.use(express.json())
     this.app.use(express.urlencoded({ extended: true }));
     this.routes();
-    this.app.use((error: DomainException, req: Req, res: Res, next: Next) => {
-      return res.status(HttpStatus[error.statusName]).json(error);
-    });
+    this.app.all("*", this.routeNotFound);
+    this.app.use(this.errorMiddleware);
   }
   private routes() {
     for (const Controller of this.Controllers) {
       this.loadRoutes(Controller);
     }
+  }
+  private routeNotFound(_: Req, res: Res): void {
+    res.status(HttpStatus.NOT_FOUND).send({
+      detail: "Route not found"
+    });
+  }
+  private errorMiddleware(error: DomainException, _req: Req, res: Res, _next: Next) {
+    return res.status(HttpStatus[error.statusName] ?? HttpStatus.INTERNAL_SERVER_ERROR).json(error);
   }
   private mapEnumToFunctionName(methodEnum: RequestMethod): keyof Router {
     const map = new Map<RequestMethod, Partial<(keyof Router)>>([
