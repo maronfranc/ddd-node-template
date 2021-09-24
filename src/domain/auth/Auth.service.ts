@@ -13,10 +13,8 @@ export class AuthService {
     const emailExists = await userRepository.exists({ email: user.email });
     if (emailExists) throw new DomainException(authException['email-already-exists']);
     const cryptoService = new CryptoService();
-    const salt = await cryptoService.genSalt();
-    const password = await cryptoService.hash(user.password, salt);
-    user.password = password;
-    user.salt = salt;
+    user.salt = await cryptoService.genSalt();
+    user.password = await cryptoService.hash(user.password, user.salt);
     const createdUser = await userRepository.create(user);
     return this.deleteUserSensitiveData(createdUser);
   }

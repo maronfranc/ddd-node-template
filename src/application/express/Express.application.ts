@@ -66,7 +66,7 @@ export class ExpressApplication {
       const route = Reflect.getMetadata(methodName, controller) as IEndpoint;
       const expressFunctionName = this.mapEnumToFunctionName(route.method);
       const routePath = addMissingSlashToPath(route.path);
-      this.logger.info(`\t- Endpoint |${expressFunctionName}| loaded: ${path}${routePath ? routePath : '<root>'}`);
+      this.logger.info(`\t- Endpoint | ${expressFunctionName.padEnd(5)}| loaded: ${path}${routePath ? routePath : '<root>'}`);
       if (typeof this.router[expressFunctionName] !== "function") {
         throw new Error(
           `Error loading express function.
