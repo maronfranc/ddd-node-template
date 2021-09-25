@@ -6,8 +6,7 @@ const MONGO_URL = configuration.mongo.url;
 const emptyCallback = () => { };
 
 export class MongooseInfrastructure {
-  public constructor() { }
-  public connect(opts?: IConnectOptions) {
+  public init(opts?: IConnectOptions) {
     mongoose.connect(MONGO_URL);
     mongoose.connection.on('connected', opts?.onConnected ?? emptyCallback);
     mongoose.connection.on('error', opts?.onError ?? emptyCallback);

@@ -32,19 +32,19 @@ export abstract class BaseRepository<T extends Partial<IBaseModel>>  {
       .lean()
       .exec() as Promise<T | null>;
   }
-  public async findOne(cond: Partial<T>): Promise<T | null> {
+  public async findOne(filter: Partial<T>): Promise<T | null> {
     return this.BaseModel
-      .findOne(cond)
+      .findOne(filter)
       .lean()
       .exec() as Promise<T | null>;
   }
-  public async find(condition: Partial<T>, options?: Object): Promise<T[]> {
+  public async find(filter: Partial<T>, options?: Object): Promise<T[]> {
     return this.BaseModel
-      .find(condition, options)
+      .find(filter, options)
       .lean()
       .exec() as Promise<T[]>;
   }
-  public async exists(cond: Partial<T>): Promise<boolean> {
-    return this.BaseModel.exists(cond);
+  public async exists(filter: Partial<T>): Promise<boolean> {
+    return this.BaseModel.exists(filter);
   }
 }

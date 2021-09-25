@@ -6,9 +6,4 @@ export interface IConnectOptions {
     onProcessExit?: () => void;
 }
 
-export class Infrastructure {
-    public init(options?: IConnectOptions) {
-        const conn = new MongooseInfrastructure();
-        conn.connect(options);
-    }
-}
+export class Infrastructure extends MongooseInfrastructure { }
