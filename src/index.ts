@@ -1,9 +1,9 @@
 import 'reflect-metadata';
 import { Application } from './application/Application';
+import { configuration } from './config/environment';
 import { Infrastructure } from './infrastructure';
 
 function main() {
-  const PORT = 4001;
   const infrastructure = new Infrastructure();
   infrastructure.init({
     onConnected: () => {
@@ -21,9 +21,9 @@ function main() {
   });
   const application = new Application();
   application.init();
-  application.listen(PORT, () => {
+  application.listen(configuration.api.port, () => {
     console.info('================================================');
-    console.info(`Server is running at https://localhost:${PORT}`);
+    console.info(`Server is running at ${configuration.api.host}`);
     console.info('================================================');
   });
 }

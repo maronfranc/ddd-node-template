@@ -58,7 +58,7 @@ export class ExpressApplication {
       [RequestMethod.ALL, 'use'],
     ]);
     const expressFunction = map.get(methodEnum);
-    if (expressFunction === undefined) {
+    if (!expressFunction) {
       throw new Error('Method not implemented in map');
     }
     return expressFunction;
@@ -79,8 +79,7 @@ export class ExpressApplication {
           `Error loading express function.
           1. Variable "${expressFunctionName}" need to be an express function.
           2. Check if function name is correctly listed in function map.
-          3. Check if method enum is correctly listed in function map.
-          `);
+          3. Check if method enum is correctly listed in function map.`);
       }
       if (Array.isArray(route.middlewares) && route.middlewares.length >= 1) {
         (this.router[expressFunctionName] as CallableFunction)(

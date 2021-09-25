@@ -16,7 +16,13 @@ dotenv.config({ path: dotenvs[envBuild] ?? dotenvs.prod });
 if (!process.env.MONGO_URL) throw new Error('MONGO_URL not found');
 if (!process.env.JWT_PRIVATE_KEY) throw new Error('JWT_PRIVATE_KEY not found');
 if (!process.env.JWT_EXPIRES_IN) throw new Error('JWT_EXPIRES_IN not found');
+if (!process.env.PORT) throw new Error('PORT not found');
+if (!process.env.API_HOST) throw new Error('API_HOST not found');
 export const configuration = {
+  api: {
+    port: Number(process.env.PORT),
+    host: process.env.API_HOST
+  },
   mongo: {
     url: process.env.MONGO_URL
   },
