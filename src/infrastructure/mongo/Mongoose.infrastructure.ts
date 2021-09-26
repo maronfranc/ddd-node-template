@@ -1,13 +1,18 @@
 import mongoose from 'mongoose';
+import { ExampleRepository } from '.';
 import { configuration } from '../../config/environment';
 import { IConnectOptions } from '../Infrastructure';
+import { UserRepository } from './user';
 
-const MONGO_URL = configuration.mongo.url;
 const emptyCallback = () => { };
 
 export class MongooseInfrastructure {
+  public static repositories = {
+    User: UserRepository,
+    Example: ExampleRepository
+  }
   public init(opts?: IConnectOptions) {
-    mongoose.connect(MONGO_URL);
+    mongoose.connect(configuration.mongo.url);
     mongoose.connection.on('connected', opts?.onConnected ?? emptyCallback);
     mongoose.connection.on('error', opts?.onError ?? emptyCallback);
     process.on('SIGINT', () => {

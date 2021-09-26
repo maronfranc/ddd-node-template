@@ -1,4 +1,5 @@
-import { IUser, IUserModel, UserRepository } from '../../infrastructure/mongo/user';
+import { Infrastructure } from '../../infrastructure';
+import { IUser, IUserModel } from '../../infrastructure/mongo/user';
 import { DomainException } from '../library/domain.exception';
 import { userException } from '../user/user.exception';
 import { authException } from './auth.exception';
@@ -7,7 +8,9 @@ import { ICredentials } from "./interfaces/ICredentials";
 import { TokenService } from './Token.service';
 
 export class AuthService {
-  public constructor(public userRepository = new UserRepository()) { }
+  public constructor(
+    public readonly userRepository = new Infrastructure.repositories.User()
+  ) { }
   public async registerUser(user: IUserModel): Promise<IUser> {
     if (!user.password) throw new DomainException(authException['invalid-password']);
     const emailExists = await this.userRepository.exists({ email: user.email });
