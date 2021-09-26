@@ -1,6 +1,6 @@
 import { authException } from "../../../../domain/auth/auth.exception";
-import { DomainException } from "../../../../domain/library/domain.exception";
-import { jsonSchema } from "../../../../domain/library/json-schema";
+import { DomainException } from "../../../../domain/library/exceptions/domain.exception";
+import { jsonSchema } from "../../../../domain/library/exceptions/json-schema";
 
 export interface ILoginDto {
   email: string;

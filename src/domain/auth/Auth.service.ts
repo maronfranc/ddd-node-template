@@ -1,6 +1,6 @@
-import { Infrastructure } from '../../infrastructure';
+import { Infrastructure } from '../../infrastructure/Infrastructure';
 import { IUser, IUserModel } from '../../infrastructure/mongo/user';
-import { DomainException } from '../library/domain.exception';
+import { DomainException } from '../library/exceptions/domain.exception';
 import { userException } from '../user/user.exception';
 import { authException } from './auth.exception';
 import { CryptoService } from './Crypto.service';

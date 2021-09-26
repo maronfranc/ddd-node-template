@@ -1,4 +1,4 @@
-import { REGEX_EMAIL } from "../common/regex";
+import { REGEX_EMAIL } from "../library/common/regex";
 
 export const authJsonSchema = {
   email: {

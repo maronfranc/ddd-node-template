@@ -1,4 +1,4 @@
-import { Infrastructure } from "../../infrastructure";
+import { Infrastructure } from "../../infrastructure/Infrastructure";
 import { IExample } from "../../infrastructure/mongo/example";
 import { CreateExampleDto } from "./create-example.dto";
 

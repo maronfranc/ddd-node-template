@@ -1,4 +1,4 @@
-import { authJsonSchema } from "../auth/auth-json-schema";
+import { authJsonSchema } from "../../auth/auth-json-schema";
 
 export const jsonSchema = {
   auth: authJsonSchema,

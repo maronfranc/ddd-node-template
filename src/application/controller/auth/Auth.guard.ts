@@ -1,7 +1,8 @@
 import { TokenService } from "../../../domain/auth";
-import { headerException } from "../../../domain/library/header.exception";
+import { headerException } from "../../../domain/library/exceptions/header.exception";
 import { IUser } from "../../../infrastructure/mongo/user";
 import { Next, ReqAuthorized, Res } from "../../express/Express.interfaces";
+import { HttpStatus } from "../../library/http/http-status.enum";
 
 export class AuthGuard {
   static middleware(
@@ -11,7 +12,9 @@ export class AuthGuard {
   ) {
     const bearerToken = req.header('authorization');
     if (!bearerToken) {
-      return res.status(401).json(headerException["bearer-token-not-provided"]);
+      return res
+        .status(HttpStatus.UNAUTHORIZED)
+        .json(headerException["bearer-token-not-provided"]);
     }
     try {
       const tokenService = new TokenService();
@@ -20,7 +23,9 @@ export class AuthGuard {
       req.user = tokenUser;
       next();
     } catch (error) {
-      res.status(400).json({ error: 'Invalid credentials' })
+      res
+        .status(HttpStatus.BAD_REQUEST)
+        .json(headerException["bearer-token-invalid-credentials"]);
     }
   }
 }

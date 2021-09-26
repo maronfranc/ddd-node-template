@@ -1,7 +1,7 @@
 import 'reflect-metadata';
 import { Application } from './application/Application';
-import { configuration } from './config/environment';
-import { Infrastructure } from './infrastructure';
+import { configuration } from './environment';
+import { Infrastructure } from './infrastructure/Infrastructure';
 
 function main() {
   const infrastructure = new Infrastructure();

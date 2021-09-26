@@ -1,10 +1,10 @@
 import 'jest-extended';
 import 'reflect-metadata';
 import supertest from 'supertest';
-import { INVALID_DATE } from '../../../domain/common/constants';
+import { INVALID_DATE } from '../../../domain/library/common/constants';
 import { MongoDbMemory } from '../../../test/mongo/mongodb-memory';
 import { Application } from '../../Application';
-import { HttpStatus } from '../../http/http-status.enum';
+import { HttpStatus } from '../../library/http/http-status.enum';
 import { AuthController } from './Auth.controller';
 import { IRegisterUserDto } from './dto';
 

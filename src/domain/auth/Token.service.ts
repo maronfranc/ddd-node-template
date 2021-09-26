@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import { configuration } from '../../config/environment';
+import { configuration } from '../../environment';
 import { IUser } from '../../infrastructure/mongo/user';
 
 export class TokenService {

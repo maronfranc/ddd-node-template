@@ -1,4 +1,4 @@
-import { HttpStatusNames } from "../../application/http/http-status-names";
+import { HttpStatusNames } from "../../../application/library/http/http-status-names";
 import { domainException } from "./exception-map";
 
 export interface IDomainException {

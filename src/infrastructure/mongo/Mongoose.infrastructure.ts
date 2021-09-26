@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 import { ExampleRepository } from '.';
-import { configuration } from '../../config/environment';
+import { configuration } from '../../environment';
 import { IConnectOptions } from '../Infrastructure';
 import { UserRepository } from './user';
 

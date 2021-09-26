@@ -1,7 +1,7 @@
 import { AuthService } from '../../../domain/auth/Auth.service';
 import { Next, Req, ReqAuthorized, Res } from '../../express/Express.interfaces';
-import { HttpStatus } from '../../http/http-status.enum';
 import { Controller, Get, Post } from '../../library/decorators';
+import { HttpStatus } from '../../library/http/http-status.enum';
 import { AuthGuard } from './Auth.guard';
 import { LoginDto, RegisterUserDto } from './dto';
 

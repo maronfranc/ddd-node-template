@@ -1,7 +1,7 @@
 import { authException } from "../../../../domain/auth/auth.exception";
-import { INVALID_DATE } from "../../../../domain/common/constants";
-import { DomainException } from "../../../../domain/library/domain.exception";
-import { jsonSchema } from "../../../../domain/library/json-schema";
+import { INVALID_DATE } from "../../../../domain/library/common/constants";
+import { DomainException } from "../../../../domain/library/exceptions/domain.exception";
+import { jsonSchema } from "../../../../domain/library/exceptions/json-schema";
 
 export interface IRegisterUserDto {
   email: string;

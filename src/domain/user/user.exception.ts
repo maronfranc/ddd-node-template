@@ -1,4 +1,4 @@
-import { jsonSchema } from "../library/json-schema";
+import { jsonSchema } from "../library/exceptions/json-schema";
 
 export const userException = {
   'user-by-email-not-found': {

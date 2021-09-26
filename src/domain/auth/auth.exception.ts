@@ -1,5 +1,5 @@
-import { IDomainException } from "../library/domain.exception";
-import { jsonSchema } from "../library/json-schema";
+import { IDomainException } from "../library/exceptions/domain.exception";
+import { jsonSchema } from "../library/exceptions/json-schema";
 
 export const authException = {
   /** Invalid email or password */

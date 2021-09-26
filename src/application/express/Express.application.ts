@@ -1,12 +1,12 @@
 import express, { Express, Router } from 'express';
-import { DomainException } from '../../domain/library/domain.exception';
+import { DomainException } from '../../domain/library/exceptions/domain.exception';
 import { AuthController } from '../controller/auth/Auth.controller';
 import { ExampleController } from '../controller/example/Example.controller';
-import { HttpStatus } from '../http/http-status.enum';
 import { PATH_METADATA } from '../library/decorators/decorator.constants';
+import { HttpStatus } from '../library/http/http-status.enum';
 import { IEndpoint } from '../library/interfaces/IEndpoint';
 import { RequestMethod } from '../library/interfaces/request-method';
-import { addMissingSlashToPath } from '../utils/formatRouteUrl';
+import { addMissingSlashToPath } from '../library/utils/format';
 import { Next, Req, Res } from './Express.interfaces';
 
 type IController = {

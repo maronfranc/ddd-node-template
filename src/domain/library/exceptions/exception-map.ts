@@ -1,4 +1,4 @@
-import { authException } from "../auth/auth.exception";
+import { authException } from "../../auth/auth.exception";
 import { IDomainException } from "./domain.exception";
 
 export const domainException = {
