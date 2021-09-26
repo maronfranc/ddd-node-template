@@ -14,8 +14,7 @@ export class CryptoService {
     user: Pick<IUserModel, 'salt' | 'password'>
   ): Promise<boolean> {
     if (!user.password || !user.salt) throw new Error('Internal server error');
-    const cryptoService = new CryptoService();
-    const password = await cryptoService.hash(unhashedPassword, user.salt);
+    const password = await this.hash(unhashedPassword, user.salt);
     return password === user.password;
   }
 }
