@@ -28,16 +28,17 @@ export class ExpressApplication {
   public listen(port: number, callback: () => void) {
     this.app.listen(port, callback);
   }
+  /** Init routes and middlewares. */
   public init() {
     this.app.use(express.json())
     this.app.use(express.urlencoded({ extended: true }));
-    this.routes();
+    this.controllerRoutes();
     this.app.all("*", this.routeNotFound);
     this.app.use(this.errorMiddleware);
   }
-  private routes() {
+  private controllerRoutes() {
     for (const Controller of this.Controllers) {
-      this.loadRoutes(Controller);
+      this.loadControllerRoutes(Controller);
     }
   }
   private routeNotFound(_: Req, res: Res): void {
@@ -63,7 +64,7 @@ export class ExpressApplication {
     }
     return expressFunction;
   }
-  private loadRoutes(Controller: any) {
+  private loadControllerRoutes(Controller: any) {
     const controller = new Controller();
     let path = Reflect.getMetadata(PATH_METADATA, Controller) as string;
     path = addMissingSlashToPath(path);
