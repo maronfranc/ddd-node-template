@@ -9,7 +9,7 @@ export class ExampleController {
   public async find(_: Req, res: Res): Promise<void> {
     const exampleService = new ExampleService();
     const examples = await exampleService.findExamples({});
-    res.status(200).send({ examples });
+    res.status(200).send(examples);
   }
   @Post("create")
   public async create(req: Req, res: Res): Promise<void> {

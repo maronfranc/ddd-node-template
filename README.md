@@ -7,4 +7,4 @@ An implementation of a domain-driven design [architecture](src).
 - Node
 
 ## [Docker](docker)
-Application container with infrastructure databases.
+Container with infrastructure databases.

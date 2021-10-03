@@ -1,4 +1,5 @@
 import express, { Express, Router } from 'express';
+import swaggerUi from 'swagger-ui-express';
 import { DomainException } from '../../domain/library/exceptions/domain.exception';
 import { AuthController } from '../controller/auth/Auth.controller';
 import { ExampleController } from '../controller/example/Example.controller';
@@ -8,6 +9,7 @@ import { IEndpoint } from '../library/interfaces/IEndpoint';
 import { RequestMethod } from '../library/interfaces/request-method';
 import { addMissingSlashToPath } from '../library/utils/format';
 import { Next, Req, Res } from './Express.interfaces';
+import { openApi } from './openapi';
 
 type IController = {
   new(): any
@@ -32,6 +34,7 @@ export class ExpressApplication {
   public init() {
     this.app.use(express.json())
     this.app.use(express.urlencoded({ extended: true }));
+    this.loadSwagger();
     this.controllerRoutes();
     this.app.all("*", this.routeNotFound);
     this.app.use(this.errorMiddleware);
@@ -93,5 +96,10 @@ export class ExpressApplication {
       }
     }
     this.app.use(addMissingSlashToPath(path), this.router);
+  }
+  private loadSwagger() {
+    const route = '/api-docs';
+    this.logger.info(`- Loading openApi route: ${route}`);
+    this.app.use(route, swaggerUi.serve, swaggerUi.setup(openApi));
   }
 }
