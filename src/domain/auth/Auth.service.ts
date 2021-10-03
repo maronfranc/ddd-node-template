@@ -24,9 +24,7 @@ export class AuthService {
   public async login({ email, password }: ICredentials): Promise<{ token: string }> {
     await this.handleLoginSensitiveData(email, password);
     password = null;
-    const user = await this.userRepository.findOne({
-      email
-    });
+    const user = await this.userRepository.findOne({ email });
     if (user === null) throw new DomainException(userException['user-by-email-not-found']);
     const tokenService = new TokenService();
     const token = await tokenService.generateToken({ ...user });

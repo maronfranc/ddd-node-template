@@ -5,20 +5,18 @@ import { Infrastructure } from './infrastructure/Infrastructure';
 
 function main() {
   const infrastructure = new Infrastructure();
-  infrastructure.init({
-    onConnected: () => {
+  void infrastructure.init()
+    .then(() => {
       console.info('================================================');
       console.info('Database connected');
       console.info('================================================');
-    },
-    onError: (error) => {
+    }).catch((error) => {
       console.info('================================================');
       console.info('Database connection error', error);
       console.info('================================================');
       const WITH_ERROR = 1;
       process.exit(WITH_ERROR);
-    }
-  });
+    });
   const application = new Application();
   application.init();
   application.listen(configuration.api.port, () => {
