@@ -8,7 +8,7 @@ export class MongooseInfrastructure {
     User: UserRepository,
     Example: ExampleRepository
   }
-  public async init() {
+  public static async init() {
     return mongoose.connect(configuration.mongo.url);
   }
 }

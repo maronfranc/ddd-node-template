@@ -4,22 +4,21 @@ import { configuration } from './environment';
 import { Infrastructure } from './infrastructure/Infrastructure';
 
 function main() {
-  const infrastructure = new Infrastructure();
-  void infrastructure.init()
+  void Infrastructure.init()
     .then(() => {
       console.info('================================================');
       console.info('Database connected');
       console.info('================================================');
-    }).catch((error) => {
+    })
+    .catch((error) => {
       console.info('================================================');
       console.info('Database connection error', error);
       console.info('================================================');
       const WITH_ERROR = 1;
       process.exit(WITH_ERROR);
     });
-  const application = new Application();
-  application.init();
-  application.listen(configuration.api.port, () => {
+  Application.init();
+  Application.listen(configuration.api.port, () => {
     console.info('================================================');
     console.info(`Server is running at ${configuration.api.host}`);
     console.info('================================================');
