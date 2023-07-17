@@ -1,8 +1,8 @@
 version: '3.8'
 
 services:
-  db-mongodb:
-    container_name: ddd-mongodb-container
+  dev-db-mongodb:
+    container_name: dev-ddd-mongodb-container
     image: mongo:6.0.7
     env_file:
       - .env.dev
