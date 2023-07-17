@@ -19,7 +19,7 @@ export abstract class BaseRepository<T extends Partial<IBaseModel>>  {
   public async delete(id: string): Promise<boolean> {
     const _id = new Types.ObjectId(id);
     try {
-      await this.BaseModel.remove({ _id }).exec();
+      await this.BaseModel.deleteOne({ _id }).exec();
       return true;
     } catch (err) {
       return false;
@@ -45,6 +45,7 @@ export abstract class BaseRepository<T extends Partial<IBaseModel>>  {
       .exec() as Promise<T[]>;
   }
   public async exists(filter: Partial<T>): Promise<boolean> {
-    return this.BaseModel.exists(filter);
+    const exists = await this.BaseModel.exists(filter);
+    return !!exists?._id;
   }
 }

@@ -7,12 +7,12 @@ export class UserRepository extends BaseRepository<IUserModel> {
   constructor() {
     super(UserSchema);
   }
-  public async findSensitiveData(email: string): Promise<Pick<IUserModel, "email"> & IUserSensitiveData> {
+  public async findSensitiveData(email: string): Promise<Pick<IUserModel, "email"> & IUserSensitiveData | null> {
     const select = <IObjectBoolean<IUserModel>>{
       email: true,
       salt: true,
       password: true
-    }
+    };
     return this.BaseModel
       .findOne({ email })
       .select(select)
