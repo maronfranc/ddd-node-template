@@ -6,8 +6,8 @@
   "scripts": {
     "test": "BUILD=test jest --forceExit",
     "start:dev": "BUILD=dev nodemon ./src/index.ts",
-    "build": "rimraf ./ddd-build && tsc --project ./",
-    "postbuild": "cp .env ./ddd-build/",
+    "build": "rimraf ./ddd-build && tsc --project tsconfig.build.json",
+    "postbuild": "cp -t ./ddd-build/ package.json yarn.lock",
     "prod": "BUILD=prod node ./ddd-build/src/index.js"
   },
   "dependencies": {

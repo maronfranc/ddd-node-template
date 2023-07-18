@@ -14,8 +14,6 @@ function main() {
       console.info('================================================');
       console.info('Database connection error', error);
       console.info('================================================');
-      const WITH_ERROR = 1;
-      process.exit(WITH_ERROR);
     });
   Application.init();
   Application.listen(configuration.api.port, () => {

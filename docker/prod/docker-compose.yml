@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  prod-db-mongodb:
+    container_name: prod-ddd-mongodb-container
+    image: mongo:6.0.7
+    networks: 
+      - ddd-backend
+    env_file:
+      - .mongodb.env
+    volumes:
+      - ./container-data/mongodb:/data/mongodb
+    ports:
+      - "27017:27017"
+
+  prod-api-node:
+    container_name: prod-ddd-api-node-container
+    networks: 
+      - ddd-backend
+    build:
+      # Root folder context. Remember to update here if folder structure changes.
+      context: ../../
+      dockerfile: ./docker/prod/api.dockerfile
+    ports: 
+      - "4001:4001"
+    env_file:
+      - .mongodb.env
+      - .api.env
+    links:
+      - prod-db-mongodb
+
+networks:
+  ddd-backend:
+    name: node-ddd-network

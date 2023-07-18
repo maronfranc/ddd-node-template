@@ -1,19 +1,28 @@
 import dotenv from 'dotenv';
 
+const envMap = {
+  test: '.env.test',
+  dev: '.env.dev',
+  // prod: '.env', Production .env is being loaded in docker/prod container.
+} as const;
+const skipLoading = ['prod'];
+type DotEnv = keyof typeof envMap;
+const BUILD = 'BUILD';
+
+function getEnvValue(value: string): DotEnv | undefined {
+  return process.env[value] as DotEnv | undefined;
+};
+
 function loadEnv() {
-  const dotenvs = {
-    test: '.env.test',
-    dev: '.env.dev',
-    prod: '.env',
-  } as const;
-  type DotEnv = keyof typeof dotenvs;
-  const BUILD = 'BUILD';
-  const getEnvValue = (value: string): DotEnv | undefined => {
-    return process.env[value] as DotEnv | undefined;
-  };
   const envBuild = getEnvValue(BUILD);
   if (!envBuild) throw new Error('BUILD env flag not found');
-  dotenv.config({ path: dotenvs[envBuild] });
+
+  const dotenvFile = envMap[envBuild];
+  if (!dotenvFile && skipLoading.includes(dotenvFile)) {
+    throw new Error('Env file not in .envs map');
+  }
+
+  dotenv.config({ path: dotenvFile });
 }
 
 function buildConfiguration() {
