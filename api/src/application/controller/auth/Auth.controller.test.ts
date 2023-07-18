@@ -2,23 +2,26 @@ import 'jest-extended';
 import 'reflect-metadata';
 import supertest from 'supertest';
 import { INVALID_DATE } from '../../../domain/library/common/constants';
-import { MongoDbMemory } from '../../../test/mongo/mongodb-memory';
 import { Application } from '../../Application';
 import { HttpStatus } from '../../library/http/http-status.enum';
 import { AuthController } from './Auth.controller';
 import { IRegisterUserDto } from './dto';
-
-const mongoDbMemory = new MongoDbMemory();
+import { Infrastructure } from '../../../infrastructure/Infrastructure';
+import { configuration } from '../../../environment';
 
 describe('AuthController', () => {
   beforeAll(async () => {
-    await mongoDbMemory.connect();
+    if (configuration.build?.toLowerCase() !== 'test') {
+      throw new Error(`Attempted to test in a forbidden environment: ${configuration.build}`)
+    }
+    await Infrastructure.init();
+
     (Application as any).Controllers = [AuthController];
     Application.init();
   });
-  afterAll(async () => await mongoDbMemory.closeDatabase());
+
   const payloadLogin = {
-    email: 'test.user@example.com',
+    email: `test.user${Math.random()}@example.com`,
     password: 'test-password',
   }
   const payloadCredentials: IRegisterUserDto = {
@@ -27,6 +30,7 @@ describe('AuthController', () => {
     lastName: 'Test',
     birthDate: new Date('2000/01/01').toISOString() as any,
   }
+
   describe('register', () => {
     it('should register user with expected data', async () => {
       const response = await supertest(Application.app)
@@ -50,12 +54,14 @@ describe('AuthController', () => {
       expect(body.user.person.birthDate).toBe(payloadCredentials.birthDate);
       expect(response.status).toBe(HttpStatus.CREATED);
     });
+
     it('should throw exception if user email exists', async () => {
       const response = await supertest(Application.app)
         .post('/auth/register')
         .send(payloadCredentials);
       expect(response.status).toBe(HttpStatus.CONFLICT);
     });
+
     describe('register user dto', () => {
       it('should throw bad request if email is invalid', async () => {
         const payloadInvalidEmail = { ...payloadCredentials };
@@ -65,6 +71,7 @@ describe('AuthController', () => {
           .send(payloadInvalidEmail);
         expect(response.status).toBe(HttpStatus.BAD_REQUEST);
       });
+
       it('should throw bad request if password is invalid', async () => {
         const payloadInvalidPassword = { ...payloadCredentials };
         payloadInvalidPassword.password = false as any;
@@ -73,6 +80,7 @@ describe('AuthController', () => {
           .send(payloadInvalidPassword);
         expect(response.status).toBe(HttpStatus.BAD_REQUEST);
       });
+
       it(`should throw bad request if password length is less than minLength`,
         async () => {
           const payloadInvalidPassword = { ...payloadCredentials };
@@ -82,6 +90,7 @@ describe('AuthController', () => {
             .send(payloadInvalidPassword);
           expect(response.status).toBe(HttpStatus.BAD_REQUEST);
         });
+
       it('should throw bad request if firstName is undefined', async () => {
         const payloadInvalidFirstName = { ...payloadCredentials };
         payloadInvalidFirstName.firstName = undefined as any;
@@ -90,6 +99,7 @@ describe('AuthController', () => {
           .send(payloadInvalidFirstName);
         expect(response.status).toBe(HttpStatus.BAD_REQUEST);
       });
+
       it('should throw bad request if lastName is undefined', async () => {
         const payloadInvalidLastName = { ...payloadCredentials };
         payloadInvalidLastName.lastName = undefined as any;
@@ -98,6 +108,7 @@ describe('AuthController', () => {
           .send(payloadInvalidLastName);
         expect(response.status).toBe(HttpStatus.BAD_REQUEST);
       });
+
       it('should throw bad request if birthDate is an invalid date', async () => {
         const payloadInvalidBirthDate = { ...payloadCredentials };
         payloadInvalidBirthDate.birthDate = new Date('Invalid date payload')
@@ -108,6 +119,7 @@ describe('AuthController', () => {
       });
     });
   });
+
   let loginToken: string;
   describe('login', () => {
     it('should generate a valid token', async () => {
@@ -119,6 +131,7 @@ describe('AuthController', () => {
       loginToken = body.token;
       expect(response.status).toBe(HttpStatus.OK);
     });
+
     describe('login dto', () => {
       it('should throw bad request if email is invalid', async () => {
         const payloadInvalidEmail = { ...payloadCredentials };
@@ -128,6 +141,7 @@ describe('AuthController', () => {
           .send(payloadInvalidEmail);
         expect(response.status).toBe(HttpStatus.BAD_REQUEST);
       });
+
       it('should throw bad request if password is invalid', async () => {
         const payloadInvalidPassword = { ...payloadCredentials };
         payloadInvalidPassword.password = false as any;
@@ -136,6 +150,7 @@ describe('AuthController', () => {
           .send(payloadInvalidPassword);
         expect(response.status).toBe(HttpStatus.BAD_REQUEST);
       });
+
       it(`should throw bad request if password length is less than minLength`,
         async () => {
           const payloadInvalidPassword = { ...payloadCredentials };
@@ -147,6 +162,7 @@ describe('AuthController', () => {
         });
     });
   });
+
   describe('token', () => {
     it('should return expected user data', async () => {
       expect(loginToken).toBeString();

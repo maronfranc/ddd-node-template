@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  test-db-mongodb:
+    container_name: test-ddd-mongodb-container
+    image: mongo:6.0.7
+    env_file:
+      - .mongodb.env
+    volumes:
+      - in_memory_ram:/data/mongodb
+    ports:
+      - "27017:27017"
+
+volumes:
+  # Apparently these `ramfs` and `tmpfs` are storing temp data in disk somewhere.
+  # FIXME: Verify why it is persisting data or delete this comment if it RAM only.
+  in_memory_ram:
+    driver_opts:
+      type: ramfs
+      device: ramfs
+  # in_memory_tmpfs_swap:
+  #   driver_opts:
+  #     type: tmpfs
+  #     device: tmpfs
