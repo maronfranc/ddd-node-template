@@ -26,17 +26,17 @@ function loadEnv() {
 }
 
 function buildConfiguration() {
-  // .env validation
+  // env validation
   if (!process.env.MONGO_URL) throw new Error('MONGO_URL not found');
   if (!process.env.JWT_PRIVATE_KEY) throw new Error('JWT_PRIVATE_KEY not found');
   if (!process.env.JWT_EXPIRES_IN) throw new Error('JWT_EXPIRES_IN not found');
-  if (!process.env.PORT) throw new Error('PORT not found');
+  if (!process.env.API_PORT) throw new Error('API_PORT not found');
   if (!process.env.API_HOST) throw new Error('API_HOST not found');
 
   return {
     build: process.env.BUILD,
     api: {
-      port: Number(process.env.PORT),
+      port: Number(process.env.API_PORT),
       host: process.env.API_HOST,
     },
     mongo: {
