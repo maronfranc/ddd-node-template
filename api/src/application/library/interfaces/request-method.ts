@@ -8,3 +8,11 @@ export enum RequestMethod {
   OPTIONS,
   HEAD,
 }
+
+export type RequestMethodName =
+  'get' |
+  'post' |
+  'put' |
+  'delete' |
+  'patch' |
+  'use';
