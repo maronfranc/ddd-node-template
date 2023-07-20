@@ -51,8 +51,6 @@
     "modulePathIgnorePatterns": [
       "<rootDir>/dist/"
     ],
-    "setupFilesAfterEnv": [
-      "jest-extended"
-    ]
+    "setupFilesAfterEnv": ["jest-extended/all"]
   }
 }
