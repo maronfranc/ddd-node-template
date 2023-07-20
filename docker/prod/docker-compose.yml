@@ -6,17 +6,33 @@ services:
     image: mongo:6.0.7
     networks: 
       - ddd-backend
+    ports:
+      - "27017:27017"
     env_file:
       - .mongodb.env
     volumes:
       - ./container-data/mongodb:/data/mongodb
-    ports:
-      - "27017:27017"
+    healthcheck:
+      # Connection status: disconnected: 0, connected: 1, connecting: 2, disconnecting: 3.
+      test: >
+        mongosh 
+        --eval "if (db.serverStatus().ok !== 1) { throw new Error('Not connected') };" 
+        -u $$MONGO_INITDB_ROOT_USERNAME -p $$MONGO_INITDB_ROOT_PASSWORD
+      interval: 10s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
 
   prod-api-node:
     container_name: prod-ddd-api-node-container
+    read_only: true
     networks: 
       - ddd-backend
+    links:
+      - prod-db-mongodb
+    depends_on:
+      prod-db-mongodb:
+        condition: service_healthy
     build:
       # Root folder context. Remember to update here if folder structure changes.
       context: ../../
@@ -24,10 +40,16 @@ services:
     ports: 
       - "4001:4001"
     env_file:
-      - .mongodb.env
       - .api.env
-    links:
-      - prod-db-mongodb
+    volumes:
+      - ../scripts/api.heatlhcheck.js:/usr/scripts/api.heatlhcheck.js
+    healthcheck:
+      test: >
+        node /usr/scripts/api.heatlhcheck.js
+      interval: 10s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
 
 networks:
   ddd-backend:

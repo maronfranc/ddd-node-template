@@ -3,6 +3,7 @@ import swaggerUi from 'swagger-ui-express';
 import { DomainException } from '../../domain/library/exceptions/domain.exception';
 import { AuthController } from '../controller/auth/Auth.controller';
 import { ExampleController } from '../controller/example/Example.controller';
+import { HealthcheckController } from '../controller/healthcheck/Healthcheck.controller';
 import { PATH_METADATA } from '../library/decorators/decorator.constants';
 import { HttpStatus } from '../library/http/http-status.enum';
 import { IEndpoint } from '../library/interfaces/IEndpoint';
@@ -19,6 +20,7 @@ export class ExpressApplication {
   private static Controllers: IController[] = [
     AuthController,
     ExampleController,
+    HealthcheckController,
   ];
 
   public static listen(port: number, callback: () => void) {
