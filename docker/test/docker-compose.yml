@@ -13,7 +13,7 @@ services:
 
 volumes:
   # Apparently these `ramfs` and `tmpfs` are storing temp data in disk somewhere.
-  # FIXME: Verify why it is persisting data or delete this comment if it RAM only.
+  # FIXME: Verify why it is persisting data or delete this comment if RAM only is working.
   in_memory_ram:
     driver_opts:
       type: ramfs
