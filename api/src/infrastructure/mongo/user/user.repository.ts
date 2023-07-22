@@ -3,7 +3,7 @@ import { IObjectBoolean } from '../interfaces/object-boolean.interface';
 import { IUserModel, IUserSensitiveData } from './interfaces/user.interface';
 import UserSchema from './user.schema';
 
-export class UserRepository extends BaseRepository<IUserModel> {
+class UserRepository extends BaseRepository<IUserModel> {
   constructor() {
     super(UserSchema);
   }
@@ -19,3 +19,5 @@ export class UserRepository extends BaseRepository<IUserModel> {
       .lean();
   }
 }
+
+export default new UserRepository();

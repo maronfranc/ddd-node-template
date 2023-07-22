@@ -1,10 +1,10 @@
 import 'reflect-metadata';
-import { Application } from './application/Application';
+import application from './application/Application';
 import { configuration } from './environment';
-import { Infrastructure } from './infrastructure/Infrastructure';
+import infrastructure from './infrastructure/Infrastructure';
 
 function main() {
-  void Infrastructure.init()
+  void infrastructure.init()
     .then(() => {
       console.info('================================================');
       console.info('Database connected');
@@ -15,8 +15,7 @@ function main() {
       console.info('Database connection error', error);
       console.info('================================================');
     });
-  Application.init();
-  Application.listen(configuration.api.port, () => {
+  application.listen(configuration.api.port, () => {
     console.info('================================================');
     console.info(`Server is running at ${configuration.api.host}`);
     console.info('================================================');

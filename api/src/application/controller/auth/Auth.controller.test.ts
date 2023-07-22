@@ -2,11 +2,11 @@ import 'jest-extended';
 import 'reflect-metadata';
 import supertest from 'supertest';
 import { INVALID_DATE } from '../../../domain/library/common/constants';
-import { Application } from '../../Application';
+import application from '../../Application';
 import { HttpStatus } from '../../library/http/http-status.enum';
 import { AuthController } from './Auth.controller';
 import { IRegisterUserDto } from './dto';
-import { Infrastructure } from '../../../infrastructure/Infrastructure';
+import infrastructure from '../../../infrastructure/Infrastructure';
 import { configuration } from '../../../environment';
 
 describe('AuthController', () => {
@@ -14,10 +14,9 @@ describe('AuthController', () => {
     if (configuration.build?.toLowerCase() !== 'test') {
       throw new Error(`Attempted to test in a forbidden environment: ${configuration.build}`)
     }
-    await Infrastructure.init();
+    await infrastructure.init();
 
-    (Application as any).Controllers = [AuthController];
-    Application.init();
+    (application as any).Controllers = [AuthController];
   });
 
   const payloadLogin = {
@@ -33,7 +32,7 @@ describe('AuthController', () => {
 
   describe('register', () => {
     it('should register user with expected data', async () => {
-      const response = await supertest(Application.app)
+      const response = await supertest(application.app)
         .post('/auth/register')
         .send(payloadCredentials);
       const body = response.body;
@@ -56,7 +55,7 @@ describe('AuthController', () => {
     });
 
     it('should throw exception if user email exists', async () => {
-      const response = await supertest(Application.app)
+      const response = await supertest(application.app)
         .post('/auth/register')
         .send(payloadCredentials);
       expect(response.status).toBe(HttpStatus.CONFLICT);
@@ -66,7 +65,7 @@ describe('AuthController', () => {
       it('should throw bad request if email is invalid', async () => {
         const payloadInvalidEmail = { ...payloadCredentials };
         payloadInvalidEmail.email = 'invalid#email.com';
-        const response = await supertest(Application.app)
+        const response = await supertest(application.app)
           .post('/auth/register')
           .send(payloadInvalidEmail);
         expect(response.status).toBe(HttpStatus.BAD_REQUEST);
@@ -75,7 +74,7 @@ describe('AuthController', () => {
       it('should throw bad request if password is invalid', async () => {
         const payloadInvalidPassword = { ...payloadCredentials };
         payloadInvalidPassword.password = false as any;
-        const response = await supertest(Application.app)
+        const response = await supertest(application.app)
           .post('/auth/register')
           .send(payloadInvalidPassword);
         expect(response.status).toBe(HttpStatus.BAD_REQUEST);
@@ -85,7 +84,7 @@ describe('AuthController', () => {
         async () => {
           const payloadInvalidPassword = { ...payloadCredentials };
           payloadInvalidPassword.password = '123' as any;
-          const response = await supertest(Application.app)
+          const response = await supertest(application.app)
             .post('/auth/register')
             .send(payloadInvalidPassword);
           expect(response.status).toBe(HttpStatus.BAD_REQUEST);
@@ -94,7 +93,7 @@ describe('AuthController', () => {
       it('should throw bad request if firstName is undefined', async () => {
         const payloadInvalidFirstName = { ...payloadCredentials };
         payloadInvalidFirstName.firstName = undefined as any;
-        const response = await supertest(Application.app)
+        const response = await supertest(application.app)
           .post('/auth/register')
           .send(payloadInvalidFirstName);
         expect(response.status).toBe(HttpStatus.BAD_REQUEST);
@@ -103,7 +102,7 @@ describe('AuthController', () => {
       it('should throw bad request if lastName is undefined', async () => {
         const payloadInvalidLastName = { ...payloadCredentials };
         payloadInvalidLastName.lastName = undefined as any;
-        const response = await supertest(Application.app)
+        const response = await supertest(application.app)
           .post('/auth/register')
           .send(payloadInvalidLastName);
         expect(response.status).toBe(HttpStatus.BAD_REQUEST);
@@ -112,7 +111,7 @@ describe('AuthController', () => {
       it('should throw bad request if birthDate is an invalid date', async () => {
         const payloadInvalidBirthDate = { ...payloadCredentials };
         payloadInvalidBirthDate.birthDate = new Date('Invalid date payload')
-        const response = await supertest(Application.app)
+        const response = await supertest(application.app)
           .post('/auth/register')
           .send(payloadInvalidBirthDate);
         expect(response.status).toBe(HttpStatus.BAD_REQUEST);
@@ -123,7 +122,7 @@ describe('AuthController', () => {
   let loginToken: string;
   describe('login', () => {
     it('should generate a valid token', async () => {
-      const response = await supertest(Application.app)
+      const response = await supertest(application.app)
         .post('/auth/login')
         .send(payloadLogin);
       const body = response.body;
@@ -136,7 +135,7 @@ describe('AuthController', () => {
       it('should throw bad request if email is invalid', async () => {
         const payloadInvalidEmail = { ...payloadCredentials };
         payloadInvalidEmail.email = 'invalid#email.com';
-        const response = await supertest(Application.app)
+        const response = await supertest(application.app)
           .post('/auth/register')
           .send(payloadInvalidEmail);
         expect(response.status).toBe(HttpStatus.BAD_REQUEST);
@@ -145,7 +144,7 @@ describe('AuthController', () => {
       it('should throw bad request if password is invalid', async () => {
         const payloadInvalidPassword = { ...payloadCredentials };
         payloadInvalidPassword.password = false as any;
-        const response = await supertest(Application.app)
+        const response = await supertest(application.app)
           .post('/auth/register')
           .send(payloadInvalidPassword);
         expect(response.status).toBe(HttpStatus.BAD_REQUEST);
@@ -155,7 +154,7 @@ describe('AuthController', () => {
         async () => {
           const payloadInvalidPassword = { ...payloadCredentials };
           payloadInvalidPassword.password = '123' as any;
-          const response = await supertest(Application.app)
+          const response = await supertest(application.app)
             .post('/auth/register')
             .send(payloadInvalidPassword);
           expect(response.status).toBe(HttpStatus.BAD_REQUEST);
@@ -166,7 +165,7 @@ describe('AuthController', () => {
   describe('token', () => {
     it('should return expected user data', async () => {
       expect(loginToken).toBeString();
-      const response = await supertest(Application.app)
+      const response = await supertest(application.app)
         .get('/auth/token')
         .set({ authorization: `Bearer ${loginToken}` })
         .send();

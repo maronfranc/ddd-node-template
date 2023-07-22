@@ -15,20 +15,16 @@ import { openApi } from './openapi';
 type IController = { new(): any };
 
 export class ExpressApplication {
-  public static app: Express;
-  private static logger = console;
-  private static Controllers: IController[] = [
+  public app: Express;
+  private logger = console;
+  private Controllers: IController[] = [
     AuthController,
     ExampleController,
     HealthcheckController,
   ];
 
-  public static listen(port: number, callback: () => void) {
-    this.app.listen(port, callback);
-  }
-
   /** Init routes and middlewares. */
-  public static init() {
+  public constructor() {
     this.app = express();
     this.app.use(express.json())
     this.app.use(express.urlencoded({ extended: true }));
@@ -38,23 +34,27 @@ export class ExpressApplication {
     this.app.use(this.errorMiddleware);
   }
 
-  private static controllerRoutes() {
+  public listen(port: number, callback: () => void) {
+    this.app.listen(port, callback);
+  }
+
+  private controllerRoutes() {
     for (const Controller of this.Controllers) {
       this.loadControllerRoutes(Controller);
     }
   }
 
-  private static routeNotFound(_: Req, res: Res) {
+  private routeNotFound(_: Req, res: Res) {
     const message = { detail: "Route not found" };
     return res.status(HttpStatus.NOT_FOUND).send(message);
   }
 
-  private static errorMiddleware(error: DomainException, _req: Req, res: Res, _next: Next) {
+  private errorMiddleware(error: DomainException, _req: Req, res: Res, _next: Next) {
     const errorCode = HttpStatus[error?.statusName] ?? HttpStatus.INTERNAL_SERVER_ERROR;
     return res.status(errorCode).json(error);
   }
 
-  private static mapEnumToFunctionName(methodEnum: RequestMethod): RequestMethodName {
+  private mapEnumToFunctionName(methodEnum: RequestMethod): RequestMethodName {
     const map = new Map<RequestMethod, RequestMethodName>([
       [RequestMethod.GET, 'get'],
       [RequestMethod.POST, 'post'],
@@ -70,7 +70,7 @@ export class ExpressApplication {
     return expressFunction;
   }
 
-  private static loadControllerRoutes(Controller: IController) {
+  private loadControllerRoutes(Controller: IController) {
     const controllerSubRouter = Router();
     const controller = new Controller();
     let path = Reflect.getMetadata(PATH_METADATA, Controller) as string;
@@ -105,7 +105,7 @@ export class ExpressApplication {
     this.app.use(path, controllerSubRouter);
   }
 
-  private static loadSwagger() {
+  private loadSwagger() {
     const route = '/api-docs';
     this.logger.info(`- Loading openApi route: ${route}`);
     this.app.use(route, swaggerUi.serve, swaggerUi.setup(openApi));

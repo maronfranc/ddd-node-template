@@ -1,14 +1,14 @@
 import mongoose from 'mongoose';
-import { ExampleRepository } from '.';
+import exampleRepository from './example/example.repository';
 import { configuration } from '../../environment';
-import { UserRepository } from './user';
+import userRepository from './user/user.repository';
 
 export class MongooseInfrastructure {
-  public static repositories = {
-    User: UserRepository,
-    Example: ExampleRepository
+  public repositories = {
+    user: userRepository,
+    example: exampleRepository
   }
-  public static async init() {
+  public async init() {
     return mongoose.connect(configuration.mongo.url);
   }
 }

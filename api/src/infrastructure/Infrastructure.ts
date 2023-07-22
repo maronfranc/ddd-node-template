@@ -1,3 +1,5 @@
 import { MongooseInfrastructure } from "./mongo/Mongoose.infrastructure";
 
-export class Infrastructure extends MongooseInfrastructure { }
+class Infrastructure extends MongooseInfrastructure { }
+
+export default new Infrastructure();
