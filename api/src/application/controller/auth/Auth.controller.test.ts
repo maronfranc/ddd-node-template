@@ -2,12 +2,12 @@ import 'jest-extended';
 import 'reflect-metadata';
 import supertest from 'supertest';
 import { INVALID_DATE } from '../../../domain/library/common/constants';
+import { configuration } from '../../../environment';
+import infrastructure from '../../../infrastructure/Infrastructure';
 import application from '../../Application';
 import { HttpStatus } from '../../library/http/http-status.enum';
 import { AuthController } from './Auth.controller';
 import { IRegisterUserDto } from './dto';
-import infrastructure from '../../../infrastructure/Infrastructure';
-import { configuration } from '../../../environment';
 
 describe('AuthController', () => {
   beforeAll(async () => {
@@ -15,6 +15,7 @@ describe('AuthController', () => {
       throw new Error(`Attempted to test in a forbidden environment: ${configuration.build}`)
     }
     await infrastructure.init();
+    application.init();
 
     (application as any).Controllers = [AuthController];
   });

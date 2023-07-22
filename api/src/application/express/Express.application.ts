@@ -1,6 +1,7 @@
 import express, { Express, Router } from 'express';
 import swaggerUi from 'swagger-ui-express';
 import { DomainException } from '../../domain/library/exceptions/domain.exception';
+import { IController, IInitOption, ILogger } from '../application.interfaces';
 import { AuthController } from '../controller/auth/Auth.controller';
 import { ExampleController } from '../controller/example/Example.controller';
 import { HealthcheckController } from '../controller/healthcheck/Healthcheck.controller';
@@ -12,21 +13,23 @@ import { addMissingSlashToPath } from '../library/utils/format';
 import { Next, Req, Res } from './Express.interfaces';
 import { openApi } from './openapi';
 
-type IController = { new(): any };
-
 export class ExpressApplication {
   public app: Express;
-  private logger = console;
   private Controllers: IController[] = [
     AuthController,
     ExampleController,
     HealthcheckController,
   ];
+  private logger?: ILogger;
 
-  /** Init routes and middlewares. */
   public constructor() {
     this.app = express();
-    this.app.use(express.json())
+  }
+
+  /** Init routes and middlewares. */
+  public init(opts?: IInitOption) {
+    this.logger = opts?.logger;
+    this.app.use(express.json());
     this.app.use(express.urlencoded({ extended: true }));
     this.loadSwagger();
     this.controllerRoutes();
@@ -74,14 +77,14 @@ export class ExpressApplication {
     const controllerSubRouter = Router();
     const controller = new Controller();
     let path = Reflect.getMetadata(PATH_METADATA, Controller) as string;
-    this.logger.info(`- Loading routes: ${path ? path : '<root>'}`);
+    this.logger?.info(`- Loading routes: ${path ? path : '<root>'}`);
     path = addMissingSlashToPath(path);
     const methodNames = Reflect.getMetadataKeys(controller);
     for (const methodName of methodNames) {
       const route = Reflect.getMetadata(methodName, controller) as IEndpoint;
       const expressFunctionName = this.mapEnumToFunctionName(route.method);
       const routePath = addMissingSlashToPath(route.path);
-      this.logger.info(`\t- Endpoint | ${expressFunctionName.padEnd(5)}| loaded: ${path}${routePath ? routePath : '<root>'}`);
+      this.logger?.info(`\t- Endpoint | ${expressFunctionName.padEnd(5)}| loaded: ${path}${routePath ? routePath : '<root>'}`);
       if (typeof controllerSubRouter[expressFunctionName] !== "function") {
         throw new Error(
           `Error loading express function.
@@ -107,7 +110,7 @@ export class ExpressApplication {
 
   private loadSwagger() {
     const route = '/api-docs';
-    this.logger.info(`- Loading openApi route: ${route}`);
+    this.logger?.info(`- Loading openApi route: ${route}`);
     this.app.use(route, swaggerUi.serve, swaggerUi.setup(openApi));
   }
 }
