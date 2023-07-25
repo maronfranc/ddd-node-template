@@ -1,4 +1,4 @@
-import { Middleware } from "../../express/Express.interfaces";
+import { Middleware } from "../../express/express.interfaces";
 import { RequestMethod } from "./request-method";
 
 export interface IEndpoint {

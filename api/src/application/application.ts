@@ -1,4 +1,4 @@
-import { ExpressApplication } from "./express/Express.application";
+import { ExpressApplication } from "./express/express.application";
 
 class Application extends ExpressApplication { }
 

@@ -1,5 +1,5 @@
 import { Document } from 'mongoose';
-import { IBaseModel } from '../../Base.interface';
+import { IBaseModel } from '../../base.interface';
 import { IPerson } from './person.interface';
 
 export interface IUserModel extends Partial<IBaseModel> {

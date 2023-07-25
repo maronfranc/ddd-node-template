@@ -2,15 +2,15 @@ import express, { Express, Router } from 'express';
 import swaggerUi from 'swagger-ui-express';
 import { DomainException } from '../../domain/library/exceptions/domain.exception';
 import { IController, IInitOption, ILogger } from '../application.interfaces';
-import { AuthController } from '../controller/auth/Auth.controller';
-import { ExampleController } from '../controller/example/Example.controller';
-import { HealthcheckController } from '../controller/healthcheck/Healthcheck.controller';
+import { AuthController } from '../controller/auth/auth.controller';
+import { ExampleController } from '../controller/example/example.controller';
+import { HealthcheckController } from '../controller/healthcheck/healthcheck.controller';
 import { PATH_METADATA } from '../library/decorators/decorator.constants';
 import { HttpStatus } from '../library/http/http-status.enum';
-import { IEndpoint } from '../library/interfaces/IEndpoint';
+import { IEndpoint } from '../library/interfaces/endpoint.interface';
 import { RequestMethod, RequestMethodName } from '../library/interfaces/request-method';
 import { addMissingSlashToPath } from '../library/utils/format';
-import { Next, Req, Res } from './Express.interfaces';
+import { Next, Req, Res } from './express.interfaces';
 import { openApi } from './openapi';
 
 export class ExpressApplication {

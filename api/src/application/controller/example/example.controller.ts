@@ -1,7 +1,7 @@
 import { ExampleService } from "../../../domain/example/Example.service";
 import { exampleException } from "../../../domain/example/example.exception";
 import { DomainException } from "../../../domain/library/exceptions/domain.exception";
-import { Req, Res } from "../../express/Express.interfaces";
+import { Req, Res } from "../../express/express.interfaces";
 import { Controller } from "../../library/decorators/controller.decorator";
 import { Get, Post } from "../../library/decorators/request-mapping.decorator";
 import { HttpStatus } from "../../library/http/http-status.enum";

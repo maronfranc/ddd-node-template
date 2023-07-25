@@ -1,4 +1,4 @@
-import { BaseRepository } from '../Base.repository';
+import { BaseRepository } from '../base.repository';
 import { IExampleSubRef } from './example-sub-ref.interface';
 import ExampleSubRefSchema from './example-sub-ref.schema';
 

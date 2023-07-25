@@ -4,9 +4,9 @@ import supertest from 'supertest';
 import { INVALID_DATE } from '../../../domain/library/common/constants';
 import { configuration } from '../../../environment';
 import infrastructure from '../../../infrastructure/Infrastructure';
-import application from '../../Application';
+import application from '../../application';
 import { HttpStatus } from '../../library/http/http-status.enum';
-import { AuthController } from './Auth.controller';
+import { AuthController } from './auth.controller';
 import { IRegisterUserDto } from './dto';
 
 describe('AuthController', () => {

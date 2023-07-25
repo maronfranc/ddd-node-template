@@ -3,9 +3,9 @@ import { IUser, IUserModel } from '../../infrastructure/mongo/user';
 import { DomainException } from '../library/exceptions/domain.exception';
 import { userException } from '../user/user.exception';
 import { authException } from './auth.exception';
-import { CryptoService } from './Crypto.service';
-import { ICredentials } from "./interfaces/ICredentials";
-import { TokenService } from './Token.service';
+import { CryptoService } from './crypto.service';
+import { ICredentials } from "./interfaces/credentials.interface";
+import { TokenService } from './token.service';
 
 export class AuthService {
   public constructor(

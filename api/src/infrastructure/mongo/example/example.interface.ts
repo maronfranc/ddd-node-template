@@ -1,5 +1,5 @@
 import { Document } from 'mongoose';
-import { IBaseModel } from '../Base.interface';
+import { IBaseModel } from '../base.interface';
 import { IExampleSubRefDocument } from '../example-sub-ref';
 
 export interface IExample extends Partial<IBaseModel> {

@@ -1,4 +1,4 @@
-import { BaseRepository } from '../Base.repository';
+import { BaseRepository } from '../base.repository';
 import { IObjectBoolean } from '../interfaces/object-boolean.interface';
 import { IUserModel, IUserSensitiveData } from './interfaces/user.interface';
 import UserSchema from './user.schema';

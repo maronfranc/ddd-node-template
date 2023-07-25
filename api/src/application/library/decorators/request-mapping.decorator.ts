@@ -1,5 +1,5 @@
-import { Middleware } from '../../express/Express.interfaces';
-import { IEndpoint } from '../interfaces/IEndpoint';
+import { Middleware } from '../../express/express.interfaces';
+import { IEndpoint } from '../interfaces/endpoint.interface';
 import { RequestMethod } from '../interfaces/request-method';
 import { METHOD_METADATA, MIDDLEWARE_METADATA, PATH_METADATA } from './decorator.constants';
 

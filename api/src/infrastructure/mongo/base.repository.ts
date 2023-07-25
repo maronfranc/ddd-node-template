@@ -1,5 +1,5 @@
 import { Document, Model, Types } from "mongoose";
-import { IBaseModel } from "./Base.interface";
+import { IBaseModel } from "./base.interface";
 
 export abstract class BaseRepository<T extends Partial<IBaseModel>>  {
   constructor(protected readonly BaseModel: Model<Document>) { }

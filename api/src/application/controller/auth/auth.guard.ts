@@ -1,7 +1,7 @@
 import { TokenService } from "../../../domain/auth";
 import { headerException } from "../../../domain/library/exceptions/header.exception";
 import { IUser } from "../../../infrastructure/mongo/user";
-import { Next, ReqAuthorized, Res } from "../../express/Express.interfaces";
+import { Next, ReqAuthorized, Res } from "../../express/express.interfaces";
 import { HttpStatus } from "../../library/http/http-status.enum";
 
 export class AuthGuard {

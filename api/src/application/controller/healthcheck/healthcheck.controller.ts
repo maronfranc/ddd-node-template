@@ -1,5 +1,5 @@
 import { configuration } from '../../../environment';
-import { Req, Res } from '../../express/Express.interfaces';
+import { Req, Res } from '../../express/express.interfaces';
 import { Controller, Get } from '../../library/decorators';
 import { HttpStatus } from '../../library/http/http-status.enum';
 

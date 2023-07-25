@@ -1,4 +1,4 @@
-import { BaseRepository } from '../Base.repository';
+import { BaseRepository } from '../base.repository';
 import { IExample } from './example.interface';
 import ExampleSchema from './example.schema';
 

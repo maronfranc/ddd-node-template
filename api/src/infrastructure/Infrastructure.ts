@@ -1,4 +1,4 @@
-import { MongooseInfrastructure } from "./mongo/Mongoose.infrastructure";
+import { MongooseInfrastructure } from "./mongo/mongoose.infrastructure";
 
 class Infrastructure extends MongooseInfrastructure { }
 
