@@ -201,7 +201,7 @@ export const openApi = {
                 },
                 "example": [
                   {
-                    "_id": "614bd6484e2d74f216bf0c8a",
+                    "id": "614bd6484e2d74f216bf0c8a",
                     "createdAt": "2021-09-23T01:16:01.534Z",
                     "updatedAt": "2021-09-23T01:20:08.746Z",
                     "title": "Open api responses example"
@@ -279,7 +279,7 @@ export const openApi = {
       "User": {
         "type": "object",
         "properties": {
-          "_id": {
+          "id": {
             "$ref": "#/components/schemas/id"
           },
           "createdAt": {

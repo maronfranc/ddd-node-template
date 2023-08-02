@@ -6,7 +6,9 @@ export abstract class BaseRepository<T extends Partial<IBaseModel>>  {
   constructor(protected readonly BaseModel: Model<Document>) { }
   public async create(item: T): Promise<T> {
     const newDocument = await this.BaseModel.create(item);
-    return newDocument.toJSON() as unknown as Promise<T>;
+    const createdUser = newDocument.toJSON();
+    createdUser.id = createdUser._id;
+    return createdUser as T;
   }
   public async updateOne(id: string, item: Partial<T>): Promise<boolean> {
     const _id = new Types.ObjectId(id);
@@ -27,34 +29,33 @@ export abstract class BaseRepository<T extends Partial<IBaseModel>>  {
     }
   }
   public async findById(id: string, options?: IOptions<T>): Promise<T | null> {
-    const _id = new Types.ObjectId(id);
-    const query = this.BaseModel
-      .findById(_id);
+    const objectId = new Types.ObjectId(id);
+    const query = this.BaseModel.findById(objectId);
     if (options?.select) {
       query.select(options.select as Record<string, boolean>);
     }
-    return query.lean().exec() as Promise<T | null>;
+    const entity = await query.lean().exec()
+    if (!entity) return null;
+    entity.id = entity._id;
+    return entity as T;
   }
   public async findOne(filter: Partial<T>, options?: IOptions<T>): Promise<T | null> {
-    const query = this.BaseModel
-      .findOne(filter)
-      .lean()
+    const query = this.BaseModel.findOne(filter);
     if (options?.select) {
       query.select(options.select as Record<string, boolean>);
     }
-    return query
-      .lean()
-      .exec() as Promise<T | null>;
+    const entity = await query.lean().exec();
+    if (!entity) return null;
+    entity.id = entity._id;
+    return entity as T;
   }
   public async find(filter: Partial<T>, options?: IOptions<T>): Promise<T[]> {
-    const query = this.BaseModel
-      .find(filter, options)
-    if (options?.select) {
-      query.select(options.select as Record<string, boolean>);
-    }
-    return query
-      .lean()
-      .exec() as Promise<T[]>;
+    const query = this.BaseModel.find(filter, options);
+    const entities = await query.lean().exec();
+    return entities.map((entity) => {
+      entity.id = entity._id;
+      return entity;
+    }) as T[];
   }
   public async exists(filter: Partial<T>): Promise<boolean> {
     const exists = await this.BaseModel.exists(filter);

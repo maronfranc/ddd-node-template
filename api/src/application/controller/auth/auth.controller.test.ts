@@ -39,7 +39,7 @@ describe('AuthController', () => {
       const body = response.body;
       expect(body.token).toBeString();
       expect(body.user).toBeObject();
-      expect(body.user._id).toBeString();
+      expect(body.user.id).toBeString();
       expect(body.user.person).toBeObject();
       // saved birthDate value should be typeof Date 
       expect(new Date(body.user.person.birthDate).toString()).not.toBe(INVALID_DATE);
@@ -172,7 +172,7 @@ describe('AuthController', () => {
         .send();
       const body = response.body;
       expect(body.user).toBeObject();
-      expect(body.user._id).toBeString();
+      expect(body.user.id).toBeString();
       expect(body.user.person).toBeObject();
       // should not show user sensitive data
       expect(body.user.password).toBeNil();

@@ -7,5 +7,5 @@ export interface IExampleSubRef extends IBaseModel {
 }
 export interface IExampleSubRefBaseDocument extends IExampleSubRef, Document { }
 export interface IExampleSubRefDocument extends IExampleSubRefBaseDocument {
-  example: IExampleDocument['_id'];
+  example: IExampleDocument['id'];
 }
