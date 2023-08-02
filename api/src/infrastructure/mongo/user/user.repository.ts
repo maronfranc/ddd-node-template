@@ -13,10 +13,7 @@ class UserRepository extends BaseRepository<IUserModel> {
       salt: true,
       password: true
     };
-    return this.BaseModel
-      .findOne({ email })
-      .select(select)
-      .lean();
+    return super.findOne({ email }, { select });
   }
 }
 

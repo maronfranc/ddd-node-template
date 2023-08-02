@@ -1,5 +1,6 @@
 import { Document, Model, Types } from "mongoose";
 import { IBaseModel } from "./base.interface";
+import { IObjectBoolean } from "./interfaces/object-boolean.interface";
 
 export abstract class BaseRepository<T extends Partial<IBaseModel>>  {
   constructor(protected readonly BaseModel: Model<Document>) { }
@@ -25,22 +26,33 @@ export abstract class BaseRepository<T extends Partial<IBaseModel>>  {
       return false;
     }
   }
-  public async findById(id: string): Promise<T | null> {
+  public async findById(id: string, options?: IOptions<T>): Promise<T | null> {
     const _id = new Types.ObjectId(id);
-    return this.BaseModel
-      .findById(_id)
-      .lean()
-      .exec() as Promise<T | null>;
+    const query = this.BaseModel
+      .findById(_id);
+    if (options?.select) {
+      query.select(options.select as Record<string, boolean>);
+    }
+    return query.lean().exec() as Promise<T | null>;
   }
-  public async findOne(filter: Partial<T>): Promise<T | null> {
-    return this.BaseModel
+  public async findOne(filter: Partial<T>, options?: IOptions<T>): Promise<T | null> {
+    const query = this.BaseModel
       .findOne(filter)
       .lean()
+    if (options?.select) {
+      query.select(options.select as Record<string, boolean>);
+    }
+    return query
+      .lean()
       .exec() as Promise<T | null>;
   }
-  public async find(filter: Partial<T>, options?: Object): Promise<T[]> {
-    return this.BaseModel
+  public async find(filter: Partial<T>, options?: IOptions<T>): Promise<T[]> {
+    const query = this.BaseModel
       .find(filter, options)
+    if (options?.select) {
+      query.select(options.select as Record<string, boolean>);
+    }
+    return query
       .lean()
       .exec() as Promise<T[]>;
   }
@@ -48,4 +60,8 @@ export abstract class BaseRepository<T extends Partial<IBaseModel>>  {
     const exists = await this.BaseModel.exists(filter);
     return !!exists?._id;
   }
+}
+
+interface IOptions<T> {
+  select: IObjectBoolean<T>;
 }
