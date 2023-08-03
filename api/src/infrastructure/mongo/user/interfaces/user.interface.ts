@@ -9,6 +9,5 @@ export interface IUserModel extends Partial<IBaseModel> {
   person: IPerson;
 }
 export type IUserSensitiveData = Pick<IUserModel, "password" | "salt">;
-/** user interface omitting sensitive data */
-export type IUser = Omit<IUserModel, keyof IUserSensitiveData>;
+export type IUserWithOmittedData = Omit<IUserModel, keyof IUserSensitiveData>;
 export interface IUserDocument extends IUserModel, Document { }

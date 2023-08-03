@@ -1,12 +1,12 @@
 import jwt from 'jsonwebtoken';
 import { configuration } from '../../environment';
-import { IUser } from '../../infrastructure/mongo/user';
+import { IUserWithOmittedData } from '../../infrastructure/mongo/user';
 
 export class TokenService {
   public verifyToken(token: string) {
     return jwt.verify(token, configuration.jwt.privateKey);
   }
-  public async generateToken(payload: IUser) {
+  public async generateToken(payload: IUserWithOmittedData) {
     return jwt.sign(payload, configuration.jwt.privateKey, {
       expiresIn: configuration.jwt.expiresIn
     });

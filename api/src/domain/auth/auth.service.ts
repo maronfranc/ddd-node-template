@@ -1,5 +1,5 @@
 import infrastructure from '../../infrastructure/Infrastructure';
-import { IUser, IUserModel } from '../../infrastructure/mongo/user';
+import { IUserWithOmittedData, IUserModel } from '../../infrastructure/mongo/user';
 import { DomainException } from '../library/exceptions/domain.exception';
 import { userException } from '../user/user.exception';
 import { authException } from './auth.exception';
@@ -11,7 +11,7 @@ export class AuthService {
   public constructor(
     public readonly userRepository = infrastructure.repositories.user
   ) { }
-  public async registerUser(user: IUserModel): Promise<IUser> {
+  public async registerUser(user: IUserModel): Promise<IUserWithOmittedData> {
     if (!user.password) throw new DomainException(authException['invalid-password']);
     const emailExists = await this.userRepository.exists({ email: user.email });
     if (emailExists) throw new DomainException(authException['email-already-exists']);
@@ -30,7 +30,7 @@ export class AuthService {
     const token = await tokenService.generateToken({ ...user });
     return { token };
   }
-  public async generateToken(user: IUser) {
+  public async generateToken(user: IUserWithOmittedData) {
     const tokenService = new TokenService();
     return tokenService.generateToken(user);
   }
@@ -53,11 +53,11 @@ export class AuthService {
     unhashedPassword = null;
     this.deleteUserSensitiveData(userWithSensitiveData);
   }
-  private deleteUserSensitiveData(user: Partial<IUserModel>): IUser {
+  private deleteUserSensitiveData(user: Partial<IUserModel>): IUserWithOmittedData {
     const safeUser = { ...user };
     delete safeUser.password;
     delete safeUser.salt;
     delete safeUser.person?.cpf;
-    return safeUser as IUser;
+    return safeUser as IUserWithOmittedData;
   }
 }

@@ -1,6 +1,6 @@
 import { TokenService } from "../../../domain/auth";
 import { headerException } from "../../../domain/library/exceptions/header.exception";
-import { IUser } from "../../../infrastructure/mongo/user";
+import { IUserWithOmittedData } from "../../../infrastructure/mongo/user";
 import { Next, ReqAuthorized, Res } from "../../express/express.interfaces";
 import { HttpStatus } from "../../library/http/http-status.enum";
 
@@ -19,7 +19,7 @@ export class AuthGuard {
     try {
       const tokenService = new TokenService();
       const [, token] = bearerToken.split(' ');
-      const tokenUser = tokenService.verifyToken(token) as IUser;
+      const tokenUser = tokenService.verifyToken(token) as IUserWithOmittedData;
       req.user = tokenUser;
       next();
     } catch (error) {
