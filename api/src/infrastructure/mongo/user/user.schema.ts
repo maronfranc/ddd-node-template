@@ -1,8 +1,8 @@
 import { Model, model, Schema } from 'mongoose';
-import { IUserDocument, IUserModel } from './interfaces/user.interface';
+import { IUserDocument, IUserSchema } from './interfaces/user.interface';
 
 export const USER_REF_NAME = 'User';
-const schemaDefinition: Record<keyof IUserModel, any> = {
+const schemaDefinition: IUserSchema = {
   createdAt: {
     type: Date,
     required: false,

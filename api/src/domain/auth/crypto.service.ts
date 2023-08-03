@@ -1,5 +1,5 @@
 import bcrypt from 'bcrypt';
-import { IUserModel } from '../../infrastructure/mongo/user';
+import { IUser } from '../../infrastructure/entity-interfaces/user.interface';
 
 export class CryptoService {
   private SALT_ROUNDS = 10;
@@ -11,7 +11,7 @@ export class CryptoService {
   }
   public async compareUserPasswords(
     unhashedPassword: string,
-    user: Pick<IUserModel, 'salt' | 'password'>
+    user: Pick<IUser, 'salt' | 'password'>
   ): Promise<boolean> {
     if (!user.password || !user.salt) throw new Error('Internal server error');
     const password = await this.hash(unhashedPassword, user.salt);

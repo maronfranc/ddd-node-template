@@ -1,9 +1,8 @@
 import { Document } from 'mongoose';
-import { IBaseModel } from '../base.interface';
-import { IExampleSubRefDocument } from '../example-sub-ref';
+import { IExample } from '../../entity-interfaces/example.interface';
+import { SchemaDefinitionValues } from '../base.interface';
 
-export interface IExample extends Partial<IBaseModel> {
-  title: string;
-  subDocument?: IExampleSubRefDocument['id'];
+export interface IExampleDocument extends IExample, Document {
+  id: string;
 }
-export interface IExampleDocument extends IExample, Document { }
+export type IExampleSchema = Record<keyof Omit<IExample, 'id'>, SchemaDefinitionValues>;

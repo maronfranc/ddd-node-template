@@ -1,5 +1,5 @@
 import infrastructure from "../../infrastructure/Infrastructure";
-import { IExample } from "../../infrastructure/mongo/example";
+import { IExample } from "../../infrastructure/entity-interfaces/example.interface";
 import { CreateExampleDto } from "./create-example.dto";
 
 export class ExampleService {

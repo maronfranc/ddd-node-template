@@ -1,5 +1,5 @@
+import { IExample } from '../../entity-interfaces/example.interface';
 import { BaseRepository } from '../base.repository';
-import { IExample } from './example.interface';
 import ExampleSchema from './example.schema';
 
 class ExampleRepository extends BaseRepository<IExample> {

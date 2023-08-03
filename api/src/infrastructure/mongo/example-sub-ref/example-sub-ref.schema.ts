@@ -1,8 +1,8 @@
 import { Model, model, Schema } from 'mongoose';
-import { IExampleSubRefBaseDocument, IExampleSubRefDocument } from './example-sub-ref.interface';
+import { IExampleSubRefBaseDocument, IExampleSubRefDocument, IExampleSubRefSchema } from './example-sub-ref.interface';
 
 export const EXAMPLE_SUB_REF_REF_NAME = 'ExampleSubRef';
-const ExampleSubRefSchema = new Schema<IExampleSubRefDocument, Model<IExampleSubRefDocument>>({
+const exampleSubRefSchemaDefinition: IExampleSubRefSchema = {
   createdAt: {
     type: Date,
     required: false,
@@ -16,9 +16,10 @@ const ExampleSubRefSchema = new Schema<IExampleSubRefDocument, Model<IExampleSub
   name: {
     type: String,
     required: true,
-    lowercase: true
+    lowercase: true,
   },
-});
+}
+const ExampleSubRefSchema = new Schema<IExampleSubRefDocument, Model<IExampleSubRefDocument>>(exampleSubRefSchemaDefinition);
 ExampleSubRefSchema.pre<IExampleSubRefBaseDocument>('save', async function (this: any) {
   if (this._doc) {
     const doc = this._doc;

@@ -1,5 +1,6 @@
 import infrastructure from '../../infrastructure/Infrastructure';
-import { IUserWithOmittedData, IUserModel } from '../../infrastructure/mongo/user';
+import { IUser } from '../../infrastructure/entity-interfaces/user.interface';
+import { IUserWithOmittedData } from '../../infrastructure/mongo/user';
 import { DomainException } from '../library/exceptions/domain.exception';
 import { userException } from '../user/user.exception';
 import { authException } from './auth.exception';
@@ -8,10 +9,8 @@ import { ICredentials } from "./interfaces/credentials.interface";
 import { TokenService } from './token.service';
 
 export class AuthService {
-  public constructor(
-    public readonly userRepository = infrastructure.repositories.user
-  ) { }
-  public async registerUser(user: IUserModel): Promise<IUserWithOmittedData> {
+  private readonly userRepository = infrastructure.repositories.user
+  public async registerUser(user: IUser): Promise<IUserWithOmittedData> {
     if (!user.password) throw new DomainException(authException['invalid-password']);
     const emailExists = await this.userRepository.exists({ email: user.email });
     if (emailExists) throw new DomainException(authException['email-already-exists']);
@@ -53,7 +52,7 @@ export class AuthService {
     unhashedPassword = null;
     this.deleteUserSensitiveData(userWithSensitiveData);
   }
-  private deleteUserSensitiveData(user: Partial<IUserModel>): IUserWithOmittedData {
+  private deleteUserSensitiveData(user: Partial<IUser>): IUserWithOmittedData {
     const safeUser = { ...user };
     delete safeUser.password;
     delete safeUser.salt;

@@ -1,10 +1,14 @@
-interface IDocumentDate {
-  type: DateConstructor;
-  required: boolean;
-  default: string;
+export interface SchemaDefinitionValues {
+  type: any;
+  required?: boolean;
+  /** @default true */
+  select?: boolean;
+  default?: any;
+  lowercase?: boolean;
+  ref?: string;
 }
 
 export interface IBaseModel {
-  createdAt: IDocumentDate;
-  updatedAt: IDocumentDate;
+  createdAt: SchemaDefinitionValues;
+  updatedAt: SchemaDefinitionValues;
 }

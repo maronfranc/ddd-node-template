@@ -1,8 +1,8 @@
 import { Document, Model, Types } from "mongoose";
-import { IBaseModel } from "./base.interface";
+import { IBaseInterface } from "../entity-interfaces/base.interface";
 import { IObjectBoolean } from "./interfaces/object-boolean.interface";
 
-export abstract class BaseRepository<T extends Partial<IBaseModel>>  {
+export abstract class BaseRepository<T extends Partial<IBaseInterface>>  {
   constructor(protected readonly BaseModel: Model<Document>) { }
   public async create(item: T): Promise<T> {
     const newDocument = await this.BaseModel.create(item);

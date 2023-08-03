@@ -1,9 +1,9 @@
 import { Model, model, Schema } from 'mongoose';
 import { EXAMPLE_SUB_REF_REF_NAME } from '../example-sub-ref';
-import { IExample, IExampleDocument } from './example.interface';
+import { IExampleDocument, IExampleSchema } from './example.interface';
 
 export const EXAMPLE_REF_NAME = 'Example';
-const schemaDefinition: Record<keyof IExample, any> = {
+const schemaDefinition: IExampleSchema = {
   createdAt: {
     type: Date,
     required: false,
