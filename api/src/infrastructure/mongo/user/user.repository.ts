@@ -1,7 +1,7 @@
 import { IUser } from '../../entity-interfaces/user.interface';
+import { IUserSensitiveData } from '../../interfaces/user.interface';
 import { BaseRepository } from '../base.repository';
 import { IObjectBoolean } from '../interfaces/object-boolean.interface';
-import { IUserSensitiveData } from './interfaces/user.interface';
 import UserSchema from './user.schema';
 
 class UserRepository extends BaseRepository<IUser> {

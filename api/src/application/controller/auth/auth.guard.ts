@@ -1,6 +1,6 @@
 import { TokenService } from "../../../domain/auth";
 import { headerException } from "../../../domain/library/exceptions/header.exception";
-import { IUserWithOmittedData } from "../../../infrastructure/mongo/user";
+import { IUserWithOmittedData } from "../../../infrastructure/interfaces/user.interface";
 import { Next, ReqAuthorized, Res } from "../../express/express.interfaces";
 import { HttpStatus } from "../../library/http/http-status.enum";
 

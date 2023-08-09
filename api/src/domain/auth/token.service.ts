@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 import { configuration } from '../../environment';
-import { IUserWithOmittedData } from '../../infrastructure/mongo/user';
+import { IUserWithOmittedData } from '../../infrastructure/interfaces/user.interface';
 
 export class TokenService {
   public verifyToken(token: string) {

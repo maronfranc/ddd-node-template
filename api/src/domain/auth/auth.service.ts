@@ -1,6 +1,6 @@
 import infrastructure from '../../infrastructure/Infrastructure';
 import { IUser } from '../../infrastructure/entity-interfaces/user.interface';
-import { IUserWithOmittedData } from '../../infrastructure/mongo/user';
+import { IUserWithOmittedData } from '../../infrastructure/interfaces/user.interface';
 import { DomainException } from '../library/exceptions/domain.exception';
 import { userException } from '../user/user.exception';
 import { authException } from './auth.exception';

@@ -1,5 +1,5 @@
+import { IExampleSubRef } from '../../entity-interfaces/example-sub-ref.interface';
 import { BaseRepository } from '../base.repository';
-import { IExampleSubRef } from './example-sub-ref.interface';
 import ExampleSubRefSchema from './example-sub-ref.schema';
 
 class ExampleSubRefRepository extends BaseRepository<IExampleSubRef> {
