@@ -5,6 +5,7 @@
     "test",
     "dist",
     "**/*spec.ts",
-    "**/*test.ts"
+    "**/*test.ts",
+    "**/*.sql"
   ]
 }

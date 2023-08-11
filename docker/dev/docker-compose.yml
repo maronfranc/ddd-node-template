@@ -5,8 +5,19 @@ services:
     container_name: dev-ddd-mongodb-container
     image: mongo:6.0.7
     env_file:
-      - .env.dev
+      - .mongodb.env
     volumes:
       - ./container-data/mongodb:/data/mongodb
     ports:
       - "27017:27017"
+
+  dev-db-postgres:
+    container_name: dev-ddd-postgres-container
+    image: postgres:15.3-alpine3.18
+    ports: 
+      - 5432:5432
+    env_file: 
+      - ./.postgres.env
+    volumes:
+      - in_memory_ram/postgres-data:/data/postgres
+      - ./docker/sql/:/docker-entrypoint-initdb.d/
