@@ -9,6 +9,9 @@ export class ExampleService {
   public async findExamples(condition: Partial<IExample>): Promise<IExample[]> {
     return this.exampleRepository.find(condition);
   }
+  public async findById(id: string) {
+    return this.exampleRepository.findById(id);
+  }
   public async create(dto: CreateExampleDto): Promise<IExample> {
     return this.exampleRepository.create({ title: dto.title });
   }

@@ -6,13 +6,20 @@ import { Controller } from "../../library/decorators/controller.decorator";
 import { Get, Post } from "../../library/decorators/request-mapping.decorator";
 import { HttpStatus } from "../../library/http/http-status.enum";
 
-@Controller("example")
+@Controller("examples")
 export class ExampleController {
   @Get()
   public async find(_: Req, res: Res): Promise<void> {
     const exampleService = new ExampleService();
     const examples = await exampleService.findExamples({});
     res.status(HttpStatus.OK).send(examples);
+  }
+  @Get(':id')
+  public async findById(req: Req, res: Res): Promise<void> {
+    const id = req.params.id;
+    const exampleService = new ExampleService();
+    const example = await exampleService.findById(id);
+    res.status(HttpStatus.OK).send(example);
   }
   @Post("create")
   public async create(req: Req, res: Res): Promise<void> {
