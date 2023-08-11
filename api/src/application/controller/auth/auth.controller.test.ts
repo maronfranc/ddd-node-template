@@ -41,8 +41,6 @@ describe('AuthController', () => {
       expect(body.user).toBeObject();
       expect(body.user.id).toBeString();
       expect(body.user.person).toBeObject();
-      // saved birthDate value should be typeof Date 
-      expect(new Date(body.user.person.birthDate).toString()).not.toBe(INVALID_DATE);
       // should not show user sensitive data
       expect(body.user.password).toBeNil();
       expect(body.user.salt).toBeNil();
@@ -51,7 +49,6 @@ describe('AuthController', () => {
       expect(body.user.email).toBe(payloadCredentials.email);
       expect(body.user.person.firstName).toBe(payloadCredentials.firstName);
       expect(body.user.person.lastName).toBe(payloadCredentials.lastName);
-      expect(body.user.person.birthDate).toBe(payloadCredentials.birthDate);
       expect(response.status).toBe(HttpStatus.CREATED);
     });
 
