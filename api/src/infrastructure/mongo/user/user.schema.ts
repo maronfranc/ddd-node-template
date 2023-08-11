@@ -27,6 +27,18 @@ const schemaDefinition: IUserSchema = {
     select: false
   },
   person: {
+    createdAt: {
+      type: Date,
+      required: false,
+      default: new Date().toISOString(),
+      select: false,
+    },
+    updatedAt: {
+      type: Date,
+      required: false,
+      default: new Date().toISOString(),
+      select: false,
+    },
     firstName: { type: String, required: true },
     lastName: { type: String, required: true },
     birthDate: {

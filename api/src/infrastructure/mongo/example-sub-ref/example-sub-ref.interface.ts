@@ -1,6 +1,6 @@
 import { Document } from 'mongoose';
 import { IExampleSubRef } from '../../entity-interfaces/example-sub-ref.interface';
-import { SchemaDefinitionValues } from '../base.interface';
+import { SchemaDefinitionValues } from '../../interfaces/base.interface';
 import { IExampleDocument } from '../example';
 
 export interface IExampleSubRefBaseDocument extends IExampleSubRef, Document {

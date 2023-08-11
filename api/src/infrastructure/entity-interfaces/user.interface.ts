@@ -5,5 +5,5 @@ export interface IUser extends Partial<IBaseInterface> {
   email: string;
   password: string;
   salt: string;
-  person: IPerson;
+  person?: IPerson | null;
 }

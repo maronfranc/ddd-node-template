@@ -8,7 +8,10 @@ export interface SchemaDefinitionValues {
   ref?: string;
 }
 
+export type SchemaDefinition<TKeys extends string = string> = Record<TKeys, SchemaDefinitionValues>;
+
 export interface IBaseModel {
+  id: string;
   createdAt: SchemaDefinitionValues;
   updatedAt: SchemaDefinitionValues;
 }

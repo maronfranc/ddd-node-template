@@ -1,6 +1,8 @@
 docker/**/container-data
 ddd-build
 
+/ignore
+
 # dotenv environment variables file
 # .env
 # .env.test

@@ -21,8 +21,6 @@ function pingApi() {
     timeout: 2000,
   }, (res) => {
     const statusMessage = `STATUS: ${res.statusCode}`;
-    console.log(statusMessage);
-
     const isErrorStatusCode = res.statusCode >= 400;
     if (isErrorStatusCode) endProcessWithError(statusMessage);
     process.exit(WITH_SUCESS);

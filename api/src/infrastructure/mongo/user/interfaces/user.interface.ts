@@ -1,6 +1,6 @@
 import { Document } from 'mongoose';
 import { IUser } from '../../../entity-interfaces/user.interface';
-import { SchemaDefinitionValues } from '../../base.interface';
+import { SchemaDefinitionValues } from '../../../interfaces/base.interface';
 import { IPersonSchema } from './person.interface';
 
 export interface IUserDocument extends IUser, Document {

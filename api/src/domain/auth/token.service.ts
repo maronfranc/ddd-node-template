@@ -6,7 +6,7 @@ export class TokenService {
   public verifyToken(token: string) {
     return jwt.verify(token, configuration.jwt.privateKey);
   }
-  public async generateToken(payload: IUserWithOmittedData) {
+  public async generateToken(payload: Partial<IUserWithOmittedData>) {
     return jwt.sign(payload, configuration.jwt.privateKey, {
       expiresIn: configuration.jwt.expiresIn
     });
