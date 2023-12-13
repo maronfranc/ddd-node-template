@@ -1,6 +1,7 @@
 import infrastructure from '../../infrastructure/Infrastructure';
 import { IUser } from '../../infrastructure/entity-interfaces/user.interface';
 import { IUserWithOmittedData } from '../../infrastructure/interfaces/user.interface';
+import { IObjectBoolean } from '../../infrastructure/mongo/interfaces/object-boolean.interface';
 import { DomainException } from '../library/exceptions/domain.exception';
 import { userException } from '../user/user.exception';
 import { authException } from './auth.exception';
@@ -18,7 +19,7 @@ export class AuthService {
     user.salt = await cryptoService.genSalt();
     user.password = await cryptoService.hash(user.password, user.salt);
     const createdUser = await this.userRepository.create(user);
-    return this.deleteUserSensitiveData(createdUser);
+    return this.cleanUserSensitiveData(createdUser);
   }
   public async login({ email, password }: ICredentials): Promise<{ token: string }> {
     await this.handleLoginSensitiveData(email, password);
@@ -38,7 +39,10 @@ export class AuthService {
     unhashedPassword: string | null
   ): Promise<void | never> {
     if (!unhashedPassword) throw new DomainException(authException['invalid-credentials']);
-    let userWithSensitiveData = await this.userRepository.findSensitiveData(email);
+    let userWithSensitiveData = await this.userRepository.findOne(
+      { email },
+      { select: <IObjectBoolean<IUser>>{ email: true, salt: true, password: true } }
+    );
     if (!userWithSensitiveData) throw new DomainException(authException['user-email-not-found']);
     if (!userWithSensitiveData.password || !userWithSensitiveData.salt) {
       throw new DomainException();
@@ -52,11 +56,14 @@ export class AuthService {
     unhashedPassword = null;
     this.deleteUserSensitiveData(userWithSensitiveData);
   }
-  private deleteUserSensitiveData(user: Partial<IUser>): IUserWithOmittedData {
+  private deleteUserSensitiveData(mutUser: Partial<IUser>): void {
+    delete mutUser.password;
+    delete mutUser.salt;
+    delete mutUser.person?.cpf;
+  }
+  private cleanUserSensitiveData(user: Partial<IUser>): IUserWithOmittedData {
     const safeUser = { ...user };
-    delete safeUser.password;
-    delete safeUser.salt;
-    delete safeUser.person?.cpf;
+    this.deleteUserSensitiveData(safeUser);
     return safeUser as IUserWithOmittedData;
   }
 }

@@ -1,7 +1,6 @@
 import 'jest-extended';
 import 'reflect-metadata';
 import supertest from 'supertest';
-import { INVALID_DATE } from '../../../domain/library/common/constants';
 import { configuration } from '../../../environment';
 import infrastructure from '../../../infrastructure/Infrastructure';
 import application from '../../application';

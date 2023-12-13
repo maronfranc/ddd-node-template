@@ -11,13 +11,20 @@ services:
     ports:
       - "27017:27017"
 
-  dev-db-postgres:
-    container_name: dev-ddd-postgres-container
-    image: postgres:15.3-alpine3.18
-    ports: 
-      - 5432:5432
-    env_file: 
-      - ./.postgres.env
-    volumes:
-      - in_memory_ram/postgres-data:/data/postgres
-      - ./docker/sql/:/docker-entrypoint-initdb.d/
+  # dev-db-postgres:
+  #   container_name: dev-ddd-postgres-container
+  #   image: postgres:15.3-alpine3.18
+  #   ports: 
+  #     - 5432:5432
+  #   env_file: 
+  #     - ./.postgres.env
+  #   volumes:
+  #     - in_memory_ram/postgres-data:/data/postgres
+  #     - ./docker/sql/:/docker-entrypoint-initdb.d/
+
+# volumes:
+#   in_memory:
+#     driver_opts:
+#       type: ramfs
+#       device: ramfs
+
