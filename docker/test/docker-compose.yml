@@ -3,7 +3,7 @@ version: '3.8'
 services:
   test-db-mongodb:
     container_name: test-ddd-mongodb-container
-    image: mongo:6.0.7
+    image: mongo:7.0.7
     env_file:
       - .mongodb.env
     volumes:
@@ -11,25 +11,8 @@ services:
     ports:
       - "27017:27017"
 
-  test-db-postgres:
-    container_name: test-ddd-postgres-container
-    image: postgres:15.3-alpine3.18
-    env_file: 
-      - .postgres.env
-    volumes:
-      - in_memory_ram_postgresql:/data/postgres
-      - ../postgresql-initdb/:/docker-entrypoint-initdb.d/
-    ports: 
-      - 5432:5432
-
 volumes:
-  # Apparently these `ramfs` and `tmpfs` are storing temp data in disk somewhere.
-  # FIXME: Verify why it is persisting data or delete this comment if RAM only is working.
   in_memory_ram_mongodb:
-    driver_opts:
-      type: ramfs
-      device: ramfs
-  in_memory_ram_postgresql:
     driver_opts:
       type: ramfs
       device: ramfs

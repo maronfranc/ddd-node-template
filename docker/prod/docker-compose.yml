@@ -3,7 +3,7 @@ version: '3.8'
 services:
   prod-db-mongodb:
     container_name: prod-ddd-mongodb-container
-    image: mongo:6.0.7
+    image: mongo:7.0.7
     networks: 
       - ddd-backend
     ports:
@@ -18,34 +18,6 @@ services:
         mongosh 
         --eval "if (db.serverStatus().ok !== 1) { throw new Error('Not connected') };" 
         -u $$MONGO_INITDB_ROOT_USERNAME -p $$MONGO_INITDB_ROOT_PASSWORD
-      interval: 10s
-      timeout: 10s
-      retries: 3
-      start_period: 5s
-
-  prod-api-node:
-    container_name: prod-ddd-api-node-container
-    read_only: true
-    networks: 
-      - ddd-backend
-    links:
-      - prod-db-mongodb
-    depends_on:
-      prod-db-mongodb:
-        condition: service_healthy
-    build:
-      # Root folder context. Remember to update here if folder structure changes.
-      context: ../../
-      dockerfile: ./docker/prod/api.dockerfile
-    ports: 
-      - "4001:4001"
-    env_file:
-      - .api.env
-    volumes:
-      - ../scripts/api.heatlhcheck.js:/usr/scripts/api.heatlhcheck.js
-    healthcheck:
-      test: >
-        node /usr/scripts/api.heatlhcheck.js
       interval: 10s
       timeout: 10s
       retries: 3
