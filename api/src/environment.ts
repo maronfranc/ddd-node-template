@@ -1,9 +1,9 @@
 import dotenv from 'dotenv';
 
 const envMap = {
-  test: '.env.test',
-  dev: '.env.dev',
-  // prod: '.env', Production .env is being loaded in docker/prod container.
+  test: '.test.env',
+  dev: '.dev.env',
+  // prod: '.env', // Is being loaded in `<root>/docker/prod` container.
 } as const;
 const skipLoading = ['prod'];
 type DotEnv = keyof typeof envMap;
