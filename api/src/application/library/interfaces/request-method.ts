@@ -9,10 +9,10 @@ export enum RequestMethod {
   HEAD,
 }
 
-export type RequestMethodName =
-  'get' |
+export type HttpVerb = 'get' |
   'post' |
   'put' |
   'delete' |
-  'patch' |
-  'use';
+  'patch';
+
+export type FastifyHttpVerb = HttpVerb | 'all';

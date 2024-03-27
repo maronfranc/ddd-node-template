@@ -8,10 +8,11 @@ import { HealthcheckController } from '../controller/healthcheck/healthcheck.con
 import { PATH_METADATA } from '../library/decorators/decorator.constants';
 import { HttpStatus } from '../library/http/http-status.enum';
 import { IEndpoint } from '../library/interfaces/endpoint.interface';
-import { RequestMethod, RequestMethodName } from '../library/interfaces/request-method';
+import { RequestMethod } from '../library/interfaces/request-method';
 import { addMissingSlashToPath } from '../library/utils/format';
-import { Next, Req, Res } from './express.interfaces';
+import { ExpressHttpVerb, ExpressRouteFunction, Next, Req, Res } from './express.interfaces';
 import { openApi } from './openapi';
+import { TodoListController } from '../controller/todo-list/todo-list.controller';
 
 export class ExpressApplication {
   public app: Express;
@@ -19,6 +20,7 @@ export class ExpressApplication {
     AuthController,
     ExampleController,
     HealthcheckController,
+    TodoListController,
   ];
   private logger?: ILogger;
 
@@ -37,7 +39,7 @@ export class ExpressApplication {
     this.app.use(this.errorMiddleware);
   }
 
-  public listen(port: number, callback: () => void) {
+  public async listen(port: number, callback: () => void) {
     this.app.listen(port, callback);
   }
 
@@ -53,12 +55,13 @@ export class ExpressApplication {
   }
 
   private errorMiddleware(error: DomainException, _req: Req, res: Res, _next: Next) {
-    const errorCode = HttpStatus[error?.statusName] ?? HttpStatus.INTERNAL_SERVER_ERROR;
+    const errorCode = HttpStatus[error?.statusName]
+      ?? HttpStatus.INTERNAL_SERVER_ERROR;
     return res.status(errorCode).json(error);
   }
 
-  private mapEnumToFunctionName(methodEnum: RequestMethod): RequestMethodName {
-    const map = new Map<RequestMethod, RequestMethodName>([
+  private mapEnumToFunctionName(methodEnum: RequestMethod): ExpressHttpVerb {
+    const map = new Map<RequestMethod, ExpressHttpVerb>([
       [RequestMethod.GET, 'get'],
       [RequestMethod.POST, 'post'],
       [RequestMethod.PUT, 'put'],
@@ -82,30 +85,44 @@ export class ExpressApplication {
     const methodNames = Reflect.getMetadataKeys(controller);
     for (const methodName of methodNames) {
       const route = Reflect.getMetadata(methodName, controller) as IEndpoint;
-      const expressFunctionName = this.mapEnumToFunctionName(route.method);
+      const httpVerb = this.mapEnumToFunctionName(route.method);
       const routePath = addMissingSlashToPath(route.path);
-      this.logger?.info(`\t- Endpoint | ${expressFunctionName.padEnd(5)}| loaded: ${path}${routePath ? routePath : '<root>'}`);
-      if (typeof controllerSubRouter[expressFunctionName] !== "function") {
+      this.logger?.info(`\t- Endpoint | ${httpVerb.padEnd(5)}| loaded: ${path}${routePath ? routePath : '<root>'}`);
+      if (typeof controllerSubRouter[httpVerb] !== "function") {
         throw new Error(
           `Error loading express function.
-          1. Variable "${expressFunctionName}" need to be an express function.
+          1. Variable "${httpVerb}" need to be an express function.
           2. Check if function name is correctly listed in function map.
           3. Check if method enum is correctly listed in function map.`);
       }
+
+      const controllerMethodRoute = this.controllerMethodWrapper(
+        controller,
+        methodName);
       if (Array.isArray(route.middlewares) && route.middlewares.length >= 1) {
-        controllerSubRouter[expressFunctionName](
+        controllerSubRouter[httpVerb](
           routePath,
           route.middlewares,
-          controller[methodName],
-        );
+          controllerMethodRoute);
       } else {
-        controllerSubRouter[expressFunctionName](
-          routePath,
-          controller[methodName],
-        );
+        controllerSubRouter[httpVerb](routePath, controllerMethodRoute);
       }
     }
     this.app.use(path, controllerSubRouter);
+  }
+
+  private controllerMethodWrapper(
+    controller: any,
+    methodName: string,
+  ): ExpressRouteFunction {
+    return async (req, res, next) => {
+      try {
+      const response = await controller[methodName](req, res, next);
+      return response;
+      } catch(err: any) {
+        return next(err);
+      }
+    }
   }
 
   private loadSwagger() {
@@ -114,3 +131,4 @@ export class ExpressApplication {
     this.app.use(route, swaggerUi.serve, swaggerUi.setup(openApi));
   }
 }
+
