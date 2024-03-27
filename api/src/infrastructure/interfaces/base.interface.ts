@@ -6,6 +6,7 @@ export interface SchemaDefinitionValues {
   default?: any;
   lowercase?: boolean;
   ref?: string;
+  enum?: any[];
 }
 
 export type SchemaDefinition<TKeys extends string = string> = Record<TKeys, SchemaDefinitionValues>;

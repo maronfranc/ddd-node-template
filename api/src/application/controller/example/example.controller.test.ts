@@ -18,10 +18,10 @@ describe(ExampleController.name, () => {
 
   let testId: string;
   const examplePayload = { title: `Dev test: [${Math.random()}]` };
-  describe('POST /examples/create', () => {
+  describe('POST /example/create', () => {
     it('should create a new example', async () => {
       const response = await supertest(application.app)
-        .post('/examples/create')
+        .post('/example/create')
         .send(examplePayload);
       const body = response.body;
       expect(body).toBeDefined();
@@ -30,9 +30,9 @@ describe(ExampleController.name, () => {
     });
   });
 
-  describe('GET /examples/:id', () => {
+  describe('GET /example/:id', () => {
     it('should return created example', async () => {
-      const response = await supertest(application.app).get(`/examples/${testId}`);
+      const response = await supertest(application.app).get(`/example/${testId}`);
       const body = response.body;
       expect(body).toBeDefined();
       expect(body.id).not.toBeNil();
@@ -42,7 +42,7 @@ describe(ExampleController.name, () => {
 
   describe('GET /examples', () => {
     it('should return a list of created examples', async () => {
-      const response = await supertest(application.app).get(`/examples`);
+      const response = await supertest(application.app).get(`/example`);
       const body = response.body;
       expect(body).toBeDefined();
     });

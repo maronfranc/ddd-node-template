@@ -6,7 +6,7 @@ import { Controller } from "../../library/decorators/controller.decorator";
 import { Get, Post } from "../../library/decorators/request-mapping.decorator";
 import { HttpStatus } from "../../library/http/http-status.enum";
 
-@Controller("examples")
+@Controller("example")
 export class ExampleController {
   @Get()
   public async find(_: Req, res: Res): Promise<void> {

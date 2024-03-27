@@ -2,7 +2,7 @@ import { Document, Model, Types } from "mongoose";
 import { IBaseInterface } from "../entity-interfaces/base.interface";
 import { IObjectBoolean } from "./interfaces/object-boolean.interface";
 
-export abstract class BaseRepository<T extends Partial<IBaseInterface>>  {
+export abstract class BaseRepository<T extends Partial<IBaseInterface>> {
   constructor(protected readonly BaseModel: Model<Document>) { }
   public async create(item: T): Promise<T> {
     const newDocument = await this.BaseModel.create(item);
@@ -10,7 +10,7 @@ export abstract class BaseRepository<T extends Partial<IBaseInterface>>  {
     createdUser.id = createdUser._id;
     return createdUser as T;
   }
-  public async updateOne(id: string, item: Partial<T>): Promise<boolean> {
+  public async updateById(id: string, item: Partial<T>): Promise<boolean> {
     const _id = new Types.ObjectId(id);
     try {
       await this.BaseModel.updateOne({ _id }, item).exec();
@@ -19,7 +19,7 @@ export abstract class BaseRepository<T extends Partial<IBaseInterface>>  {
       return false;
     }
   }
-  public async delete(id: string): Promise<boolean> {
+  public async deleteById(id: string): Promise<boolean> {
     const _id = new Types.ObjectId(id);
     try {
       await this.BaseModel.deleteOne({ _id }).exec();
@@ -29,25 +29,33 @@ export abstract class BaseRepository<T extends Partial<IBaseInterface>>  {
     }
   }
   public async findById(id: string, options?: IOptions<T>): Promise<T | null> {
-    const objectId = new Types.ObjectId(id);
-    const query = this.BaseModel.findById(objectId);
-    if (options?.select) {
-      query.select(options.select as Record<string, boolean>);
+    try {
+      const objectId = new Types.ObjectId(id);
+      const query = this.BaseModel.findById(objectId);
+      if (options?.select) {
+        query.select(options.select as Record<string, boolean>);
+      }
+      const entity = await query.lean().exec()
+      if (!entity) return null;
+      entity.id = entity._id;
+      return entity as T;
+    } catch (err: any) {
+      return null;
     }
-    const entity = await query.lean().exec()
-    if (!entity) return null;
-    entity.id = entity._id;
-    return entity as T;
   }
   public async findOne(filter: Partial<T>, options?: IOptions<T>): Promise<T | null> {
-    const query = this.BaseModel.findOne(filter);
-    if (options?.select) {
-      query.select(options.select as Record<string, boolean>);
+    try {
+      const query = this.BaseModel.findOne(filter);
+      if (options?.select) {
+        query.select(options.select as Record<string, boolean>);
+      }
+      const entity = await query.lean().exec();
+      if (!entity) return null;
+      entity.id = entity._id;
+      return entity as T;
+    } catch (err: any) {
+      return null;
     }
-    const entity = await query.lean().exec();
-    if (!entity) return null;
-    entity.id = entity._id;
-    return entity as T;
   }
   public async find(filter: Partial<T>, options?: IOptions<T>): Promise<T[]> {
     const query = this.BaseModel.find(filter, options);
