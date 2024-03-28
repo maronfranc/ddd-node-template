@@ -3,6 +3,7 @@ import { domainException } from "./exception-map";
 
 export interface IDomainException {
   detail: Readonly<string>;
+  /** StatusCode that will set the code automatically. */
   statusName: Readonly<HttpStatusNames>;
   code?: Readonly<string>;
   errors?: Readonly<any[]>;
