@@ -2,13 +2,14 @@ import { TokenService } from "../../../domain/auth";
 import { headerException } from "../../../domain/library/exceptions/header.exception";
 import { IUserWithOmittedData } from "../../../infrastructure/interfaces/user.interface";
 import { Next, ReqAuthorized, Res } from "../../express/express.interfaces";
+import { HttpNext, HttpReq, HttpRes } from "../../library/decorators/route-params";
 import { HttpStatus } from "../../library/http/http-status.enum";
 
 export class AuthGuard {
   static middleware(
-    req: ReqAuthorized,
-    res: Res,
-    next: Next
+    @HttpReq() req: ReqAuthorized,
+    @HttpRes() res: Res,
+    @HttpNext() next: Next,
   ) {
     const bearerToken = req.header('authorization');
     if (!bearerToken) {

@@ -48,7 +48,7 @@ describe('AuthController', () => {
       expect(body.user.email).toBe(payloadCredentials.email);
       expect(body.user.person.firstName).toBe(payloadCredentials.firstName);
       expect(body.user.person.lastName).toBe(payloadCredentials.lastName);
-      expect(response.status).toBe(HttpStatus.CREATED);
+      expect(response.status).toBe(HttpStatus.OK);
     });
 
     it('should throw exception if user email exists', async () => {

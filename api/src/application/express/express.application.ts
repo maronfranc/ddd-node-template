@@ -13,6 +13,8 @@ import { addMissingSlashToPath } from '../library/utils/format';
 import { ExpressHttpVerb, ExpressRouteFunction, Next, Req, Res } from './express.interfaces';
 import { openApi } from './openapi';
 import { TodoListController } from '../controller/todo-list/todo-list.controller';
+import { MethodMetadata, ParamTag, REQ_PARAM_KEY } from '../library/decorators/route-params';
+import { domainException } from '../../domain/library/exceptions/exception-map';
 
 export class ExpressApplication {
   public app: Express;
@@ -54,10 +56,16 @@ export class ExpressApplication {
     return res.status(HttpStatus.NOT_FOUND).send(message);
   }
 
-  private errorMiddleware(error: DomainException, _req: Req, res: Res, _next: Next) {
-    const errorCode = HttpStatus[error?.statusName]
+  private errorMiddleware(error: DomainException | any, _req: Req, res: Res, _next: Next) {
+    const errorCode = Number(HttpStatus[error?.statusName])
       ?? HttpStatus.INTERNAL_SERVER_ERROR;
-    return res.status(errorCode).json(error);
+    if (!(error instanceof Error)) {
+      return res.status(Number(errorCode)).json(error);
+    }
+
+    const { name, message, stack, cause } = error;
+    return res.status(errorCode)
+      .json({ name, message, stack, cause });
   }
 
   private mapEnumToFunctionName(methodEnum: RequestMethod): ExpressHttpVerb {
@@ -111,18 +119,64 @@ export class ExpressApplication {
     this.app.use(path, controllerSubRouter);
   }
 
+  private mapTagToReqParam(paramTag: ParamTag): keyof Req {
+    if (paramTag === ParamTag.PARAM) return 'params';
+    if (paramTag === ParamTag.BODY) return 'body';
+    if (paramTag === ParamTag.QUERY) return 'query';
+    throw new DomainException(domainException['internal-server-error']);
+  }
+
   private controllerMethodWrapper(
     controller: any,
     methodName: string,
   ): ExpressRouteFunction {
     return async (req, res, next) => {
       try {
-      const response = await controller[methodName](req, res, next);
-      return response;
-      } catch(err: any) {
+        const params = this.getDecoratedParams(
+          controller,
+          methodName,
+          req,
+          res,
+          next);
+        const response = await controller[methodName](...params);
+        return res.send(response);
+      } catch (err: any) {
         return next(err);
       }
     }
+  }
+
+  private getDecoratedParams(
+    controller: IController,
+    methodName: string,
+    req: Req,
+    res: Res,
+    next: Next,
+  ) {
+    const methodMetadatas: MethodMetadata = Reflect.getMetadata(
+      REQ_PARAM_KEY,
+      controller,
+      methodName);
+    if (!methodMetadatas) return [];
+    /** Decorator loads params in reverse order .*/
+    let reverseIndex = methodMetadatas.length - 1;
+    const params: any[] = [];
+    for (reverseIndex; reverseIndex >= 0; reverseIndex--) {
+      const [paramTagEnum, paramName] = methodMetadatas[reverseIndex];
+      if (paramTagEnum === ParamTag.REQ) {
+        params.push(req);
+      } else if (paramTagEnum === ParamTag.RES) {
+        params.push(res);
+      } if (paramTagEnum === ParamTag.NEXT) {
+        params.push(next);
+      } if (paramTagEnum === ParamTag.BODY) {
+        params.push(req.body);
+      } else if (paramName) {
+        const reqMap = req[this.mapTagToReqParam(paramTagEnum)];
+        params.push(reqMap[paramName]);
+      }
+    }
+    return params;
   }
 
   private loadSwagger() {

@@ -1,4 +1,4 @@
 export const addMissingSlashToPath = (path: string | undefined): string => {
-  if (path === undefined || path === null) return '';
+  if (!path) return '';
   return (path.startsWith('/')) ? path : `/${path}`;
 }
