@@ -64,19 +64,19 @@ export class TodoListController {
   @Post(':id/item-batch')
   public async createItems(
     @Param('id') id: string,
-    @Body() body: ITodoItem[],
+    @Body() body: { items: ITodoItem[] },
   ) {
     const todoListService = new TodoListService();
-    if (!isFilledArray<ITodoItem>(body)) {
+    if (!isFilledArray<ITodoItem>(body.items)) {
       throw new DomainException(todoItemException["invalid-array-of-items"]);
     }
-    const dto = body.map((b) => new CreateTodoItemDto(b))
+    const dto = body.items.map((b) => new CreateTodoItemDto(b))
     const items = await todoListService.createManyItems(id, dto)
     return {
       todoList: { id, items },
     };
   }
-  @Patch(':id/item-batch')
+  @Patch(':id/item-batch/status')
   public async updateItems(
     @Param('id') id: string,
     @Body() body: { status: string; items: Pick<ITodoItem, 'id'>[] },

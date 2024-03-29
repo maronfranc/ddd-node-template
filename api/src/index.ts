@@ -3,8 +3,8 @@ import application from './application/application';
 import { configuration } from './environment';
 import infrastructure from './infrastructure/Infrastructure';
 
-function main() {
-  void infrastructure.init()
+async function main() {
+  await infrastructure.init()
     .then(() => {
       console.info('================================================');
       console.info('Database connected');

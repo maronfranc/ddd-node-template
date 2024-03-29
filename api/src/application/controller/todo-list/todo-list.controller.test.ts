@@ -147,9 +147,9 @@ describe(TodoListController.name, () => {
     const TOTAL_ITEMS = FIRST_ITEM_PUSH + SECOND_ITEM_PUSH;
     const payload = {
       /** Items to be completed */
-      firstItems: range(FIRST_ITEM_PUSH).map(() => mockTodoItem()),
+      firstItems: { items: range(FIRST_ITEM_PUSH).map(() => mockTodoItem()) },
       /** Items that will stay pending */
-      secondItems: range(SECOND_ITEM_PUSH).map(() => mockTodoItem()),
+      secondItems: { items: range(SECOND_ITEM_PUSH).map(() => mockTodoItem()) },
     }
 
     describe('POST /todo-list/:id/item-batch', () => {
@@ -204,13 +204,13 @@ describe(TodoListController.name, () => {
       });
     });
 
-    describe("PATCH /todo-list/:id/item-batch", () => {
+    describe("PATCH /todo-list/:id/item-batch/status", () => {
       const newStatus: ITodoItem['status'] = 'complete';
       describe('update some items', () => {
         it('should update items status', async () => {
           const payload = { items: firstTestItems, status: newStatus };
           const response = await supertest(application.app)
-            .patch(`/todo-list/${testListId}/item-batch`)
+            .patch(`/todo-list/${testListId}/item-batch/status`)
             .send(payload);
           const body = response.body;
           expect(body).toBeDefined();
@@ -281,7 +281,7 @@ describe(TodoListController.name, () => {
 
         const createItemsResponse = await supertest(application.app)
           .post(`/todo-list/${testListId}/item-batch`)
-          .send([mockTodoItem()]);
+          .send({ items: [mockTodoItem()] });
         expect(createItemsResponse.statusCode)
           .not.toBeGreaterThanOrEqual(400);
 
@@ -300,8 +300,9 @@ describe(TodoListController.name, () => {
       ): Promise<Required<ITodoList>> {
         const payload = { items, status }
         const updateResponse = await supertest(application.app)
-          .patch(`/todo-list/${id}/item-batch`)
+          .patch(`/todo-list/${id}/item-batch/status`)
           .send(payload);
+        console.log(`[Log(${typeof updateResponse.body}):updateResponse.body]:`, updateResponse.body);
         expect(updateResponse.statusCode).not.toBeGreaterThanOrEqual(400);
 
         const getResponse = await supertest(application.app)
@@ -341,7 +342,7 @@ describe(TodoListController.name, () => {
 
     const ITEM_TOTAL_COUNT = 5;
     const ITEM_DELETE_COUNT = 3;
-    const payloadItems = range(ITEM_TOTAL_COUNT).map(() => mockTodoItem());
+    const payloadItems = { items: range(ITEM_TOTAL_COUNT).map(() => mockTodoItem()) };
 
     beforeAll(async () => {
       const createListPayload = mockTodoList();
