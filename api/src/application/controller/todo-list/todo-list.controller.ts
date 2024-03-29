@@ -64,7 +64,7 @@ export class TodoListController {
   @Post(':id/item-batch')
   public async createItems(
     @Param('id') id: string,
-    @Body() body: Pick<ITodoItem, 'id'>[],
+    @Body() body: ITodoItem[],
   ) {
     const todoListService = new TodoListService();
     if (!isFilledArray<ITodoItem>(body)) {

@@ -10,6 +10,7 @@ export enum ParamTag {
   REQ,
   RES,
   NEXT,
+  WS_CONNECTION,
 }
 type ParamName = string | undefined;
 type ParamMetadata = [ParamTag, ParamName];
@@ -32,6 +33,9 @@ export function HttpRes(): ParameterDecorator {
 }
 export function HttpNext(): ParameterDecorator {
   return assignMetadata(ParamTag.NEXT);
+}
+export function WsConnection(): ParameterDecorator {
+  return assignMetadata(ParamTag.WS_CONNECTION);
 }
 
 function assignMetadata(paramTag: ParamTag, placeholderParam?: string): ParameterDecorator {

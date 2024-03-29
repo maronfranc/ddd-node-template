@@ -1,8 +1,7 @@
-import { Model, model, Schema } from 'mongoose';
+import { Model, Schema } from 'mongoose';
 import { ITodoItemDocument, ITodoItemSchema } from './todo-item.interface';
 
 export const TODO_ITEM_STATUS = ['pending', 'complete'] as const;
-export const TODO_ITEM_REF_NAME = 'TodoItem';
 const schemaDefinition: ITodoItemSchema = {
   createdAt: {
     type: Date,
@@ -34,5 +33,3 @@ TodoItemSchema.pre<ITodoItemDocument>('save', async function(this: any) {
   }
   return this;
 });
-
-export default model<ITodoItemDocument, any>(TODO_ITEM_REF_NAME, TodoItemSchema);

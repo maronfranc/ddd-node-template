@@ -1,4 +1,5 @@
 export type IController = { new(): any };
+export type IWebsocketGateway = { new(): any };
 
 export interface IInitOption {
   logger?: ILogger;

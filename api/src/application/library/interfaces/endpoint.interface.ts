@@ -1,4 +1,4 @@
-import { Middleware } from "../../express/express.interfaces";
+import { Middleware } from "../../fastify/fastify.interface";
 import { RequestMethod } from "./request-method";
 
 export interface IEndpoint {
