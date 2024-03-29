@@ -11,7 +11,7 @@ function endProcessWithError(err) {
 function pingApi() {
   const { API_PORT } = process.env;
   if (!API_PORT) endProcessWithError(`Error: API_PORT not in process.env`);
-  const HEALTHCHECK_ENDPOINT = '/healthcheck/ready';
+  const HEALTHCHECK_ENDPOINT = '/healthcheck';
 
   const request = http.request({
     host: 'localhost',
