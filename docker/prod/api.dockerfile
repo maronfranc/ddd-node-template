@@ -1,6 +1,6 @@
 FROM node:18-alpine AS builder
 LABEL author="github.com/maronfranc" 
-LABEL description="Node api with domain-drive-development example"
+LABEL description="Node api with domain-driven-development example"
 
 WORKDIR /usr/node-api
 # Docker compose context is building on root folder that is the reason of `./api`.

@@ -1,28 +1,52 @@
 version: '3.8'
 
 services:
-  prod-db-mongodb:
-    container_name: prod-ddd-mongodb-container
-    image: mongo:7.0.7
-    networks: 
-      - ddd-backend
-    ports:
-      - "27017:27017"
-    env_file:
-      - .mongodb.env
+  prod-mongo-rs0-1:
+    image: mongo:6.0.13
+    hostname: prod-mongo-rs0-1
+    container_name: prod-mongo-rs0-1
     volumes:
-      - ./container-data/mongodb:/data/mongodb
-    healthcheck:
-      # Connection status: disconnected: 0, connected: 1, connecting: 2, disconnecting: 3.
-      test: >
-        mongosh 
-        --eval "if (db.serverStatus().ok !== 1) { throw new Error('Not connected') };" 
-        -u $$MONGO_INITDB_ROOT_USERNAME -p $$MONGO_INITDB_ROOT_PASSWORD
-      interval: 10s
-      timeout: 10s
-      retries: 3
-      start_period: 5s
+      - ./container-data/mongo-rs0-1:/data/mongodb
+    ports:
+      - 27017:27017
+    entrypoint: ["mongod", "--replSet", "prodReplicaSet", "--bind_ip", "localhost,prod-mongo-rs0-1"]
 
-networks:
-  ddd-backend:
-    name: node-ddd-network
+  prod-mongo-rs0-2:
+    image: mongo:6.0.13
+    hostname: prod-mongo-rs0-2
+    container_name: prod-mongo-rs0-2
+    ports:
+      - 27018:27017
+    volumes:
+      - ./container-data/mongo-rs0-2:/data/mongodb
+    entrypoint: ["mongod", "--replSet", "prodReplicaSet", "--bind_ip", "localhost,prod-mongo-rs0-2"]
+
+  prod-mongo-rs0-3:
+    image: mongo:6.0.13
+    hostname: prod-mongo-rs0-3
+    container_name: prod-mongo-rs0-3
+    ports:
+      - 27019:27017
+    volumes:
+      - ./container-data/mongo-rs0-3:/data/mongodb
+    entrypoint: ["mongod", "--replSet", "prodReplicaSet", "--bind_ip", "localhost,prod-mongo-rs0-3"]
+
+  mongosetup:
+    image: mongo:6.0.13
+    depends_on:
+      - prod-mongo-rs0-1
+      - prod-mongo-rs0-2
+      - prod-mongo-rs0-3
+    volumes:
+      - ./mongo_setup.sh:/scripts/mongo_setup.sh
+    restart: "no"
+    entrypoint: [ "bash", "/scripts/mongo_setup.sh"]
+
+  api-node:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - prod-mongo-rs0-1
+      - prod-mongo-rs0-2
+      - prod-mongo-rs0-3

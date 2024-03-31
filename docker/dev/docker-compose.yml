@@ -1,13 +1,42 @@
 version: '3.8'
 
 services:
-  dev-db-mongodb:
-    container_name: dev-ddd-mongodb-container
-    image: mongo:7.0.7
-    env_file:
-      - .mongodb.env
+  dev-mongo-rs0-1:
+    image: mongo:6.0.13
+    hostname: dev-mongo-rs0-1
+    container_name: dev-mongo-rs0-1
     volumes:
-      - ./container-data/mongodb:/data/mongodb
-      # - temp_data/mongodb:/data/mongodb
+      - ./container-data/mongo-rs0-1:/data/mongodb
     ports:
-      - "27017:27017"
+      - 27017:27017
+    entrypoint: ["mongod", "--replSet", "devReplicaSet", "--bind_ip", "localhost,dev-mongo-rs0-1"]
+
+  dev-mongo-rs0-1:
+    image: mongo:6.0.13
+    hostname: dev-mongo-rs0-3
+    container_name: dev-mongo-rs0-3
+    ports:
+      - 27018:27017
+    volumes:
+      - ./container-data/mongo-rs0-2:/data/mongodb
+    entrypoint: ["mongod", "--replSet", "devReplicaSet", "--bind_ip", "localhost,dev-mongo-rs0-2"]
+
+  dev-mongo-rs0-3:
+    image: mongo:6.0.13
+    hostname: dev-mongo-rs0-3
+    container_name: dev-mongo-rs0-3
+    ports:
+      - 27019:27017
+    entrypoint: ["mongod", "--replSet", "devReplicaSet", "--bind_ip", "localhost,dev-mongo-rs0-3"]
+
+  mongosetup:
+    image: mongo:6.0.13
+    depends_on:
+      - dev-mongo-rs0-1
+      - dev-mongo-rs0-2
+      - dev-mongo-rs0-3
+    volumes:
+      - ./container-data/mongo-rs0-3:/data/mongodb
+      - ./mongo_setup.sh:/scripts/mongo_setup.sh
+    restart: "no"
+    entrypoint: [ "bash", "/scripts/mongo_setup.sh"]

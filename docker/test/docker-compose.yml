@@ -1,18 +1,43 @@
 version: '3.8'
 
 services:
-  test-db-mongodb:
-    container_name: test-ddd-mongodb-container
-    image: mongo:7.0.7
-    env_file:
-      - .mongodb.env
+  test-mongo-rs0-1:
+    image: mongo:6.0.13
+    hostname: test-mongo-rs0-1
+    container_name: test-mongo-rs0-1
     volumes:
-      - in_memory_ram_mongodb:/data/mongodb
+      - ./container-data/mongo-rs0-1:/data/mongodb
     ports:
-      - "27017:27017"
+      - 27017:27017
+    entrypoint: ["mongod", "--replSet", "testReplicaSet", "--bind_ip", "localhost,test-mongo-rs0-1"]
 
-volumes:
-  in_memory_ram_mongodb:
-    driver_opts:
-      type: ramfs
-      device: ramfs
+  test-mongo-rs0-2:
+    image: mongo:6.0.13
+    hostname: test-mongo-rs0-2
+    container_name: test-mongo-rs0-2
+    ports:
+      - 27018:27017
+    volumes:
+      - ./container-data/mongo-rs0-2:/data/mongodb
+    entrypoint: ["mongod", "--replSet", "testReplicaSet", "--bind_ip", "localhost,test-mongo-rs0-2"]
+
+  test-mongo-rs0-3:
+    image: mongo:6.0.13
+    hostname: test-mongo-rs0-3
+    container_name: test-mongo-rs0-3
+    ports:
+      - 27019:27017
+    volumes:
+      - ./container-data/mongo-rs0-3:/data/mongodb
+    entrypoint: ["mongod", "--replSet", "testReplicaSet", "--bind_ip", "localhost,test-mongo-rs0-3"]
+
+  mongosetup:
+    image: mongo:6.0.13
+    depends_on:
+      - test-mongo-rs0-1
+      - test-mongo-rs0-2
+      - test-mongo-rs0-3
+    volumes:
+      - ./mongo_setup.sh:/scripts/mongo_setup.sh
+    restart: "no"
+    entrypoint: [ "bash", "/scripts/mongo_setup.sh"]
