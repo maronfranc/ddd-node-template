@@ -8,6 +8,7 @@ import { getDecoratedParams } from "./fastify.application";
 import { FastifyApp, FastifyWebsocketFunction } from "./fastify.interface";
 
 export class WebsocketLoader {
+  private basePrefix = '';
   private logger: ILogger = console;
 
   private WsGateways: IWebsocketGateway[] = [
@@ -17,6 +18,7 @@ export class WebsocketLoader {
 
   public init(opt?: IInitOption): this {
     this.logger = opt?.logger ?? this.logger;
+    this.basePrefix = opt?.basePrefix ?? this.basePrefix;
     return this;
   }
 
@@ -29,9 +31,10 @@ export class WebsocketLoader {
 
   private loadControllerRoutes(app: any, WebsocketGateway: IWebsocketGateway) {
     const gateway = new WebsocketGateway();
-    let path = Reflect.getMetadata(PATH_METADATA, WebsocketGateway) as string;
+    let controllerPath = Reflect.getMetadata(PATH_METADATA, WebsocketGateway) as string;
+    controllerPath = addMissingSlashToPath(controllerPath);
+    const path = `${this.basePrefix}${controllerPath}`;
     this.logger?.info(`- Loading routes: ${path ? path : '<root>'}`);
-    path = addMissingSlashToPath(path);
     const methodNames = Reflect.getMetadataKeys(gateway);
     for (const methodName of methodNames) {
       const route = Reflect.getMetadata(methodName, gateway) as IEndpoint;

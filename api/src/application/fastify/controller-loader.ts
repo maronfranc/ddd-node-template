@@ -11,6 +11,7 @@ import { FastifyApp, FastifyRouteFunction } from "./fastify.interface";
 import { getDecoratedParams } from "./fastify.application";
 
 export class ControllerLoader {
+  private basePrefix = '';
   private logger: ILogger = console;
   private Controllers: IController[] = [
     AuthController,
@@ -21,6 +22,7 @@ export class ControllerLoader {
 
   public init(opt?: IInitOption): this {
     this.logger = opt?.logger ?? this.logger;
+    this.basePrefix = opt?.basePrefix ?? this.basePrefix;
     return this;
   }
 
@@ -52,7 +54,7 @@ export class ControllerLoader {
       const controllerMethodRoute = this.controllerMethodWrapper(
         controller,
         methodName);
-      const completePath = `${path}${routePath}`;
+      const completePath = `${this.basePrefix}${path}${routePath}`;
 
       if (Array.isArray(route.middlewares) && route.middlewares.length >= 1) {
         app[httpVerb](

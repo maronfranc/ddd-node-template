@@ -302,7 +302,6 @@ describe(TodoListController.name, () => {
         const updateResponse = await supertest(application.app)
           .patch(`/todo-list/${id}/item-batch/status`)
           .send(payload);
-        console.log(`[Log(${typeof updateResponse.body}):updateResponse.body]:`, updateResponse.body);
         expect(updateResponse.statusCode).not.toBeGreaterThanOrEqual(400);
 
         const getResponse = await supertest(application.app)

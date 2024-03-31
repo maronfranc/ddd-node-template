@@ -3,6 +3,7 @@ export type IWebsocketGateway = { new(): any };
 
 export interface IInitOption {
   logger?: ILogger;
+  basePrefix?: string;
 }
 
 export interface ILogger {

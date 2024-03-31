@@ -15,7 +15,7 @@ async function main() {
       console.info('Database connection error', error);
       console.info('================================================');
     });
-  application.init({ logger: console });
+  application.init({ basePrefix: '/api', logger: console });
   application.listen(configuration.api.port, () => {
     console.info('================================================');
     console.info(`Server is running at ${configuration.api.host}`);

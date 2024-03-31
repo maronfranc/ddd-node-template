@@ -17,6 +17,7 @@ import { MethodMetadata, ParamTag, REQ_PARAM_KEY } from '../library/decorators/r
 import { domainException } from '../../domain/library/exceptions/exception-map';
 
 export class ExpressApplication {
+  private basePreffix = '';
   public app: Express;
   private Controllers: IController[] = [
     AuthController,
@@ -31,8 +32,9 @@ export class ExpressApplication {
   }
 
   /** Init routes and middlewares. */
-  public init(opts?: IInitOption) {
-    this.logger = opts?.logger;
+  public init(opt?: IInitOption) {
+    this.logger = opt?.logger;
+    this.basePreffix = opt?.basePrefix ?? this.basePreffix;
     this.app.use(express.json());
     this.app.use(express.urlencoded({ extended: true }));
     this.loadSwagger();
@@ -87,9 +89,11 @@ export class ExpressApplication {
   private loadControllerRoutes(Controller: IController) {
     const controllerSubRouter = Router();
     const controller = new Controller();
-    let path = Reflect.getMetadata(PATH_METADATA, Controller) as string;
+    let controllerPath = Reflect.getMetadata(PATH_METADATA, Controller) as string;
+    controllerPath = addMissingSlashToPath(controllerPath);
+    const path = `${this.basePreffix}${controllerPath}`
+
     this.logger?.info(`- Loading routes: ${path ? path : '<root>'}`);
-    path = addMissingSlashToPath(path);
     const methodNames = Reflect.getMetadataKeys(controller);
     for (const methodName of methodNames) {
       const route = Reflect.getMetadata(methodName, controller) as IEndpoint;

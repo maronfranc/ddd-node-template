@@ -1,11 +1,11 @@
-# Api: `/todo-list`
+# Api: `/api/todo-list`
 Todo list controller API implmentation.
 ## Endpoints
 ### Todo list
 
 <details>
   <summary> 
-    <code>POST</code> <code>/todo-list</code> <code><b>Create new todo list</b></code> 
+    <code>POST</code> <code>/api/todo-list</code> <code><b>Create new todo list</b></code> 
   </summary>
 
 ##### Body schema
@@ -15,7 +15,7 @@ Todo list controller API implmentation.
 > | description     |  string   |  optional | Todo list description.                       |
 ###### Example cURL
 ```sh
-curl --location 'localhost:3000/todo-list' \
+curl --location 'localhost:3000/api/todo-list' \
 --header 'Content-Type: application/json' \
 --data '{
     "title": "Documentation dev test",
@@ -44,7 +44,7 @@ curl --location 'localhost:3000/todo-list' \
 
 <details>
   <summary> 
-    <code>PATCH</code> <code>/todo-list/${ID}</code> <code><b>Update todo list</b></code> 
+    <code>PATCH</code> <code>/api/todo-list/${ID}</code> <code><b>Update todo list</b></code> 
   </summary>
 
 ##### Body schema
@@ -54,7 +54,7 @@ curl --location 'localhost:3000/todo-list' \
 > | description     |  string   |  optional | Todo list description.                       |
 ###### Example cURL
 ```sh
-curl --location 'localhost:3000/todo-list' \
+curl --location 'localhost:3000/api/todo-list' \
 --header 'Content-Type: application/json' \
 --data '{
     "title": "Documentation dev test",
@@ -77,12 +77,12 @@ curl --location 'localhost:3000/todo-list' \
 
 <details>
   <summary> 
-    <code>GET</code> <code>/todo-list</code> <code><b>Get many lists</b></code> 
+    <code>GET</code> <code>/api/todo-list</code> <code><b>Get many lists</b></code> 
   </summary>
 
 ###### Example cURL
 ```sh
-curl --location 'localhost:3000/todo-list'
+curl --location 'localhost:3000/api/todo-list'
 ```
 ###### Response
 ```json
@@ -108,7 +108,7 @@ curl --location 'localhost:3000/todo-list'
 
 <details>
   <summary> 
-    <code>GET</code> <code>/todo-list/${ID}</code> <code><b>Get list by id</b></code> 
+    <code>GET</code> <code>/api/todo-list/${ID}</code> <code><b>Get list by id</b></code> 
   </summary>
 
 ##### Parameters schema
@@ -117,7 +117,7 @@ curl --location 'localhost:3000/todo-list'
 > | id              |  string   |  required | Todo list id                             |
 ###### Example cURL
 ```sh
-curl --location 'localhost:3000/todo-list/6606d3dda6fe938b7a64f9cf'
+curl --location 'localhost:3000/api/todo-list/6606d3dda6fe938b7a64f9cf'
 ```
 ###### Response
 ```json
@@ -143,7 +143,7 @@ curl --location 'localhost:3000/todo-list/6606d3dda6fe938b7a64f9cf'
 
 <details>
   <summary> 
-    <code>POST</code> <code>/todo-list/${ID}/item-batch</code> <code><b>Batch create todo items</b></code>
+    <code>POST</code> <code>/api/todo-list/${ID}/item-batch</code> <code><b>Batch create todo items</b></code>
   </summary>
 
 ##### Parameters schema
@@ -152,7 +152,7 @@ curl --location 'localhost:3000/todo-list/6606d3dda6fe938b7a64f9cf'
 > | id              |  string   |  required | Todo list id                             |
 ###### Example cURL
 ```sh
-curl --location 'localhost:3000/todo-list/6606d3dda6fe938b7a64f9cf/item-batch' \
+curl --location 'localhost:3000/api/todo-list/6606d3dda6fe938b7a64f9cf/item-batch' \
 --header 'Content-Type: application/json' \
 --data '{
     "items": [
@@ -194,7 +194,7 @@ curl --location 'localhost:3000/todo-list/6606d3dda6fe938b7a64f9cf/item-batch' \
 
 <details>
   <summary> 
-    <code>PATCH</code> <code>/todo-list/${ID}/item-batch/status</code> <code><b>Batch update todo items status</b></code>
+    <code>PATCH</code> <code>/api/todo-list/${ID}/item-batch/status</code> <code><b>Batch update todo items status</b></code>
   </summary>
 
 ##### Parameters schema
@@ -203,7 +203,7 @@ curl --location 'localhost:3000/todo-list/6606d3dda6fe938b7a64f9cf/item-batch' \
 > | id              |  string   |  required | Todo list id                             |
 ###### Example cURL
 ```sh
-curl --location --request PATCH 'localhost:3000/todo-list/6606d3dda6fe938b7a64f9cf/item-batch/status' \
+curl --location --request PATCH 'localhost:3000/api/todo-list/6606d3dda6fe938b7a64f9cf/item-batch/status' \
 --header 'Content-Type: application/json' \
 --data '{
     "items": [
@@ -233,7 +233,7 @@ curl --location --request PATCH 'localhost:3000/todo-list/6606d3dda6fe938b7a64f9
 
 <details>
   <summary> 
-    <code>GET</code> <code>/todo-list/${ID}/item/count</code> <code><b>Get todo list count of pending and complete items</b></code>
+    <code>GET</code> <code>/api/todo-list/${ID}/item/count</code> <code><b>Get todo list count of pending and complete items</b></code>
   </summary>
 
 ##### Parameters schema
@@ -242,7 +242,7 @@ curl --location --request PATCH 'localhost:3000/todo-list/6606d3dda6fe938b7a64f9
 > | id              |  string   |  required | Todo list id                             |
 ###### Example cURL
 ```sh
-curl --location 'localhost:3000/todo-list/6606d3dda6fe938b7a64f9cf/item/count'
+curl --location 'localhost:3000/api/todo-list/6606d3dda6fe938b7a64f9cf/item/count'
 ```
 ###### Response
 ```json
@@ -260,7 +260,7 @@ curl --location 'localhost:3000/todo-list/6606d3dda6fe938b7a64f9cf/item/count'
 
 <details>
   <summary> 
-    <code>DELETE</code> <code>/todo-list/${ID}/item-batch</code> <code><b>Batch delete todo items</b></code>
+    <code>DELETE</code> <code>/api/todo-list/${ID}/item-batch</code> <code><b>Batch delete todo items</b></code>
   </summary>
 
 ##### Parameters schema
@@ -269,7 +269,7 @@ curl --location 'localhost:3000/todo-list/6606d3dda6fe938b7a64f9cf/item/count'
 > | id              |  string   |  required | Todo list id                             |
 ###### Example cURL
 ```sh
-curl --location --request DELETE 'localhost:3000/todo-list/6606d3dda6fe938b7a64f9cf/item-batch' \
+curl --location --request DELETE 'localhost:3000/api/todo-list/6606d3dda6fe938b7a64f9cf/item-batch' \
 --header 'Content-Type: application/json' \
 --data '{
     "items": [

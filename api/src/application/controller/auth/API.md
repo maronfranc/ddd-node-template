@@ -1,8 +1,8 @@
-# Api `/auth`
+# Api `/api/auth`
 
 <details>
   <summary> 
-    <code>POST</code> <code>/auth/register</code> <code><b>Create user login</b></code> 
+    <code>POST</code> <code>/api/auth/register</code> <code><b>Create user login</b></code> 
   </summary>
 
 ##### Body schema
@@ -15,7 +15,7 @@
 > | bithDate        | ISO string |  required         | Birth date              |
 ###### Example cURL
 ```sh
-curl --location 'localhost:3000/auth/register' \
+curl --location 'localhost:3000/api/auth/register' \
 --header 'Content-Type: application/json' \
 --data-raw '{
     "email": "test.user0@example.com",
@@ -53,7 +53,7 @@ curl --location 'localhost:3000/auth/register' \
 
 <details>
   <summary> 
-    <code>POST</code> <code>/auth/login</code> <code><b>Create user login</b></code> 
+    <code>POST</code> <code>/api/auth/login</code> <code><b>Create user login</b></code> 
   </summary>
 
 ##### Body schema.
@@ -63,7 +63,7 @@ curl --location 'localhost:3000/auth/register' \
 > | password        |  string    |  required | Login password                  |
 ###### Example cURL
 ```sh
-curl --location 'localhost:3000/auth/login' \
+curl --location 'localhost:3000/api/auth/login' \
 --header 'Content-Type: application/json' \
 --data-raw '{
     "email": "test.user0@example.com",
@@ -83,7 +83,7 @@ curl --location 'localhost:3000/auth/login' \
 
 <details>
   <summary> 
-    <code>GET</code> <code>/auth/token</code> <code><b>Get user token data</b></code> 
+    <code>GET</code> <code>/api/auth/token</code> <code><b>Get user token data</b></code> 
   </summary>
 
 ##### Header schema.
@@ -92,7 +92,7 @@ curl --location 'localhost:3000/auth/login' \
 > | Authorization    | `Bearer ${token}` |  required | Login token header.     |
 ###### Example cURL
 ```sh
-curl --location 'localhost:3000/auth/token' \
+curl --location 'localhost:3000/api/auth/token' \
 --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NjA3MWNmNzVlYmMxNjUxZmUyMmI4YjUiLCJlbWFpbCI6InRlc3QudXNlcjBAZXhhbXBsZS5jb20iLCJwZXJzb24iOnsiZmlyc3ROYW1lIjoiRGV2IiwibGFzdE5hbWUiOiJUZXN0In0sIl9fdiI6MCwiaWQiOiI2NjA3MWNmNzVlYmMxNjUxZmUyMmI4YjUiLCJpYXQiOjE3MTE3NDI1MTMsImV4cCI6MTcxMTgyODkxM30.I2_QnnT4p9cyEzW80isc87Dk_D-0HXgMp8Dr9HTVT8k'
 ```
 ###### Response

@@ -1,13 +1,13 @@
-# Api `/healthcheck`
+# Api `/api/healthcheck`
 
 <details>
   <summary> 
-    <code>GET</code> <code>/healthcheck</code> <code><b>Healthcheck</b></code>
+    <code>GET</code> <code>/api/healthcheck</code> <code><b>Healthcheck</b></code>
   </summary>
 
 ###### Example cURL
 ```sh
-curl --location 'localhost:3000/healthcheck'
+curl --location 'localhost:3000/api/healthcheck'
 ```
 ###### Response
 ```json
@@ -27,12 +27,12 @@ This healthcheck being used in [~/docker](../../../../../docker/scripts/api.heat
 
 <details>
   <summary> 
-    <code>GET</code> <code>/healthcheck/ping</code> <code><b>Healthcheck ping use</b></code>
+    <code>GET</code> <code>/api/healthcheck/ping</code> <code><b>Healthcheck ping use</b></code>
   </summary>
 
 ###### Example cURL
 ```sh
-curl --location 'localhost:3000/healthcheck/ping'
+curl --location 'localhost:3000/api/healthcheck/ping'
 ```
 ###### Response
 ```json

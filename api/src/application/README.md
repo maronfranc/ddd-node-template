@@ -5,8 +5,8 @@ Receive and validate data and deliver data do domain services.
 
 ### Controllers:
 - [Todo list](./controller/todo-list/API.md).
-- Healthcheck.
-- Auth.
+- [Healthcheck](./controller/healthcheck/API.md).
+- [Auth](./controller/auth/API.md).
 - Example.
 
 ## [Fastify](./fastify)
