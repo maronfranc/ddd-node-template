@@ -1,12 +1,12 @@
-import { TODO_ITEM_STATUS } from "../../../infrastructure/mongo/todo-list/todo-item/todo-item.schema";
+import { TODO_ITEM_STATUS } from "../../../infrastructure/mongo/todo-list/todo-list.schema"
 
 export const todoItemJsonSchema = {
   id: {
     name: 'id',
     type: 'string',
   },
-  description: {
-    name: 'description',
+  body: {
+    name: 'body',
     type: 'string',
   },
   status: {

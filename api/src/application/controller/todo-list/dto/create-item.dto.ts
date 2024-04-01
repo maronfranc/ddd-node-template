@@ -2,22 +2,21 @@
 import { DomainException } from "../../../../domain/library/exceptions/domain.exception";
 import { todoListException } from "../../../../domain/todo-list/todo-list.exception";
 import { ITodoItem } from "../../../../infrastructure/entity-interfaces/todo-item.interface";
-import { TODO_ITEM_STATUS } from "../../../../infrastructure/mongo/todo-list/todo-item/todo-item.schema";
+import { TODO_ITEM_STATUS } from "../../../../infrastructure/mongo/todo-list/todo-list.schema";
 
 export class CreateTodoItemDto {
-  description: ITodoItem['description'];
+  body: ITodoItem['body'];
   status: ITodoItem['status'];
 
   public constructor(unknownDto: any) {
     if (unknownDto.status && !TODO_ITEM_STATUS.includes(unknownDto.status)) {
       throw new DomainException(todoListException['invalid-status']);
     }
-    if (unknownDto.description && typeof unknownDto.description !== 'string') {
+    if (unknownDto.body && typeof unknownDto.body !== 'string') {
       throw new DomainException(todoListException['invalid-status']);
     }
 
-    this.description = unknownDto.description
-    this.status = unknownDto.status
+    this.body = unknownDto.body;
+    this.status = unknownDto.status ?? 'pending';
   }
 }
-

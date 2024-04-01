@@ -3,9 +3,9 @@ import { todoItemJsonSchema, todoItemsJsonSchema } from "./todo-item-json-schema
 
 export const todoItemException = {
   'invalid-item-description': <IDomainException>{
-    detail: 'Invalid todoList.item.descrition',
+    detail: 'Invalid todoList.item.body',
     code: 'todo-item-0001',
-    errors: [todoItemJsonSchema.description],
+    errors: [todoItemJsonSchema.body],
     statusName: 'BAD_REQUEST',
   },
   'invalid-item-status': <IDomainException>{
@@ -23,12 +23,10 @@ export const todoItemException = {
   'invalid-array-of-items-id': {
     detail: 'Invalid todoList.items.$.id',
     code: 'todo-item-0004',
-    errors: [
-      {
-        type: 'array',
-        id: todoItemJsonSchema.id,
-      }
-    ],
+    errors: [{
+      type: 'array',
+      id: todoItemJsonSchema.id,
+    }],
     statusName: 'BAD_REQUEST',
   },
 } as const;

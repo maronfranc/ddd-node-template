@@ -3,7 +3,7 @@ import { domainException } from "../../../domain/library/exceptions/exception-ma
 import { todoItemException } from "../../../domain/todo-list/todo-item/todo-item.exception";
 import { TodoListService } from "../../../domain/todo-list/todo-list.service";
 import { ITodoItem } from "../../../infrastructure/entity-interfaces/todo-item.interface";
-import { TODO_ITEM_STATUS } from "../../../infrastructure/mongo/todo-list/todo-item/todo-item.schema";
+import { TODO_ITEM_STATUS } from "../../../infrastructure/mongo/todo-list/todo-list.schema";
 import { Controller } from "../../library/decorators/controller.decorator";
 import { Get, Patch, Post, Delete } from "../../library/decorators/request-mapping.decorator";
 import { Body, Param } from "../../library/decorators/route-params";
@@ -29,7 +29,7 @@ export class TodoListController {
     }
     return { todoList };
   }
-  @Get(':id/items/count')
+  @Get(':id/item/count')
   public async count(@Param('id') id: string) {
     const todoListService = new TodoListService();
     const result = await todoListService.countItemsStatus(id);
@@ -72,9 +72,7 @@ export class TodoListController {
     }
     const dto = body.items.map((b) => new CreateTodoItemDto(b))
     const items = await todoListService.createManyItems(id, dto)
-    return {
-      todoList: { id, items },
-    };
+    return { todoList: { id, items } };
   }
   @Patch(':id/item-batch/status')
   public async updateItems(
@@ -111,7 +109,7 @@ export class TodoListController {
         todoItemException["invalid-array-of-items-id"]);
     }
     const ids = items.map((item) => item.id);
-    const isDeleted = await todoListService.deleteManyItemsByIds(id, ids);
+    const isDeleted = await todoListService.deleteManyItemsByIds(id, ids);;
     return {
       todoList: { id, itemIds: ids },
       deleted: isDeleted,

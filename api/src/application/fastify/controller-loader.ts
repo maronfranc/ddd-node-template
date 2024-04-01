@@ -71,15 +71,13 @@ export class ControllerLoader {
     methodName: string,
   ): FastifyRouteFunction {
     return async (req, res, next) => {
-      console.log(`[Log(${typeof next}):next]:`, next);
       const params = getDecoratedParams({
         controller,
         methodName,
         req,
         res,
         next,
-      }
-      );
+      });
       const response = await controller[methodName](...params);
       return res.send(response);
     }

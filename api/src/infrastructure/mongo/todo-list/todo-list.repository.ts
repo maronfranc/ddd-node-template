@@ -1,4 +1,5 @@
 import { Types } from 'mongoose';
+import ChangeStreamDocument from 'mongoose';
 import { ITodoList } from '../../entity-interfaces/todo-list.interface';
 import { BaseRepository } from '../base.repository';
 import TodoListSchema from './todo-list.schema';
@@ -8,6 +9,7 @@ class TodoListRepository extends BaseRepository<ITodoList> {
   constructor() {
     super(TodoListSchema);
   }
+
   public async createItemsByIds(
     id: string,
     items: ITodoItem[],
@@ -15,7 +17,7 @@ class TodoListRepository extends BaseRepository<ITodoList> {
     const _id = new Types.ObjectId(id);
     const _items = items.map((item) => ({
       _id: new Types.ObjectId(),
-      description: item.description,
+      body: item.body,
       status: item.status,
     }));
     await this.BaseModel.updateMany(
@@ -26,6 +28,7 @@ class TodoListRepository extends BaseRepository<ITodoList> {
       ({ ...it, id: it._id.toString() })
     );
   }
+
   public async updateItemsStatusByIds(
     id: string,
     itemIds: string[],
@@ -33,13 +36,18 @@ class TodoListRepository extends BaseRepository<ITodoList> {
   ): Promise<boolean> {
     const _id = new Types.ObjectId(id);
     const _itemIds = itemIds.map((itemId) => new Types.ObjectId(itemId));
-    // TODO: return modifiedCount
     await this.BaseModel.updateMany(
       {
         _id,
         "items._id": { $in: _itemIds },
       },
-      { $set: { "items.$[elem].status": status } },
+      {
+        $set: {
+          "items.$[elem].status": status,
+          "items.$[elem].completedAt": status === 'complete' ? new Date() : null,
+        },
+      },
+
       {
         arrayFilters: [
           { "elem._id": { $in: _itemIds } }
@@ -48,6 +56,7 @@ class TodoListRepository extends BaseRepository<ITodoList> {
     );
     return true;
   }
+
   public async deleteItemsByIds(id: string, itemIds: string[]): Promise<boolean> {
     const _id = new Types.ObjectId(id);
     const _itemIds = itemIds.map((itemId) => new Types.ObjectId(itemId));
@@ -61,6 +70,7 @@ class TodoListRepository extends BaseRepository<ITodoList> {
     ).exec();
     return true;
   }
+
   public async countItemsStatus(id: string): Promise<StatusCount> {
     const _id = new Types.ObjectId(id);
     const [result] = await this.BaseModel.aggregate([
@@ -82,11 +92,56 @@ class TodoListRepository extends BaseRepository<ITodoList> {
     ]);
     return result;
   }
+
+  public watchChangesByIds(ids: string[]) {
+    const _ids = ids.map((id) => new Types.ObjectId(id));
+    return this.BaseModel.watch(
+      [{ $match: { 'documentKey._id': { $in: _ids } } }],
+      // [{ $match: { 'documentKey._id': new Types.ObjectId(id) } }],
+      { fullDocument: 'updateLookup' }
+    );
+  }
 }
 
 export default new TodoListRepository();
 
 interface StatusCount {
   pending: number;
-  complete: any;
+  complete: number;
+}
+
+interface Ns {
+  /** Database */
+  db: string;
+  /** Document ref name */
+  coll: string;
+}
+
+export type IWatchChangeResponse<T> =
+  | IWatchUpdateChange<T>
+  | IWatchDeleteChange;
+
+interface IWatchDeleteChange {
+  operationType: "delete",
+  _id: { _data: string };
+  documentKey: { _id: string };
+  clusterTime: { $timestamp: string };
+  wallTime: string;
+  ns: Ns;
+}
+
+interface IWatchUpdateChange<T> {
+  operationType: 'update';
+  _id: { _data: string };
+  clusterTime: { $timestamp: string };
+  wallTime: string;
+  ns: Ns;
+  documentKey: { _id: string };
+  /** { fullDocument: 'updateLookup' } */
+  fullDocument?: T;
+  updateDescription: {
+    updatedFields: Partial<T> | Partial<T>[];
+    removedFields: Partial<T> | Partial<T>[];
+    truncatedArrays: Partial<T> | Partial<T>[];
+  }
 }

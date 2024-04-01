@@ -7,8 +7,8 @@
   "scripts": {
     "build": "rimraf ./ddd-build && tsc --project tsconfig.build.json",
     "postbuild": "cp -t ./ddd-build/ package.json yarn.lock",
-    "test": "BUILD=test jest --forceExit",
-    "start:dev": "BUILD=dev nodemon ./src/index.ts",
+    "test": "BUILD=test jest",
+    "dev": "BUILD=dev nodemon ./src/index.ts",
     "prod": "BUILD=prod node ./ddd-build/src/index.js"
   },
   "dependencies": {

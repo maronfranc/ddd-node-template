@@ -1,7 +1,7 @@
 import { Model, model, Schema } from 'mongoose';
 import { ITodoListDocument, ITodoListSchema } from './todo-list.interface';
-import { TODO_ITEM_STATUS } from './todo-item/todo-item.schema';
 
+export const TODO_ITEM_STATUS = ['pending', 'complete'] as const;
 export const TODO_LIST_REF_NAME = 'TodoList';
 const schemaDefinition: ITodoListSchema = {
   createdAt: {
@@ -27,7 +27,8 @@ const schemaDefinition: ITodoListSchema = {
       required: false,
       default: new Date(),
     },
-    description: { type: String, required: false },
+    completedAt: { type: Date, required: false },
+    body: { type: String, required: false },
     status: {
       type: String,
       required: true,
