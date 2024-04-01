@@ -2,6 +2,7 @@ import { CreateTodoListDto } from "../../application/controller/todo-list/dto/cr
 import infrastructure from "../../infrastructure/Infrastructure";
 import { ITodoItem } from "../../infrastructure/entity-interfaces/todo-item.interface";
 import { ITodoList } from "../../infrastructure/entity-interfaces/todo-list.interface";
+import { IWatchChangeResponse } from "../../infrastructure/mongo/todo-list/todo-list.repository";
 
 export class TodoListService {
   public constructor(
@@ -44,5 +45,14 @@ export class TodoListService {
   public async countItemsStatus(id: string) {
     return this.todoListRepository.countItemsStatus(id);
   }
+  public watchChangesByIds(ids: string[]) {
+    return this.todoListRepository.watchChangesByIds(ids);
+  }
+  public handleChange(change: IWatchChangeResponse<ITodoList>) {
+    if (change.operationType === 'update') {
+      return change.fullDocument;
+    } else if (change.operationType === 'delete') {
+      return { id: change.documentKey._id };
+    }
+  }
 }
-

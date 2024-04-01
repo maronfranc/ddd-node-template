@@ -12,7 +12,7 @@ import { CreateTodoItemDto } from "./dto/create-item.dto";
 import { CreateTodoListDto } from "./dto/create-todo-list.dto";
 import { UpdateTodoListDto } from "./dto/update-todo-list.dto";
 
-@Controller("todo-list")
+@Controller("list")
 export class TodoListController {
   @Get()
   public async find() {
