@@ -12,15 +12,19 @@ describe(ExampleController.name, () => {
       throw new Error(`Attempted to test in a forbidden environment: ${configuration.build}`)
     }
     await infrastructure.init();
-    application.init();
+    await application.init();
     (application as any).Controllers = [ExampleController];
+    if (!application.testApp) {
+      throw new Error("Undefined `application.testApp`");
+    }
   });
+  afterAll(async () => await infrastructure.close());
 
   let testId: string;
   const examplePayload = { title: `Dev test: [${Math.random()}]` };
   describe('POST /example/create', () => {
     it('should create a new example', async () => {
-      const response = await supertest(application.app)
+      const response = await supertest(application.testApp!)
         .post('/example/create')
         .send(examplePayload);
       const body = response.body;
@@ -32,7 +36,7 @@ describe(ExampleController.name, () => {
 
   describe('GET /example/:id', () => {
     it('should return created example', async () => {
-      const response = await supertest(application.app).get(`/example/${testId}`);
+      const response = await supertest(application.testApp!).get(`/example/${testId}`);
       const body = response.body;
       expect(body).toBeDefined();
       expect(body.id).not.toBeNil();
@@ -42,7 +46,7 @@ describe(ExampleController.name, () => {
 
   describe('GET /examples', () => {
     it('should return a list of created examples', async () => {
-      const response = await supertest(application.app).get(`/example`);
+      const response = await supertest(application.testApp!).get(`/example`);
       const body = response.body;
       expect(body).toBeDefined();
     });

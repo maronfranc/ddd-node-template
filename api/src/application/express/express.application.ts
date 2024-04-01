@@ -15,10 +15,12 @@ import { openApi } from './openapi';
 import { TodoListController } from '../controller/todo-list/todo-list.controller';
 import { MethodMetadata, ParamTag, REQ_PARAM_KEY } from '../library/decorators/route-params';
 import { domainException } from '../../domain/library/exceptions/exception-map';
+import { configuration } from '../../environment';
 
 export class ExpressApplication {
   private basePreffix = '';
   public app: Express;
+  public testApp?: Express;
   private Controllers: IController[] = [
     AuthController,
     ExampleController,
@@ -29,10 +31,13 @@ export class ExpressApplication {
 
   public constructor() {
     this.app = express();
+    if (configuration.build === 'test') {
+      this.testApp = this.app;
+    }
   }
 
   /** Init routes and middlewares. */
-  public init(opt?: IInitOption) {
+  public async init(opt?: IInitOption) {
     this.logger = opt?.logger;
     this.basePreffix = opt?.basePrefix ?? this.basePreffix;
     this.app.use(express.json());
@@ -59,14 +64,14 @@ export class ExpressApplication {
   }
 
   private errorMiddleware(error: DomainException | any, _req: Req, res: Res, _next: Next) {
-    const errorCode = Number(HttpStatus[error?.statusName])
+    const errorCode = HttpStatus[error?.statusName]
       ?? HttpStatus.INTERNAL_SERVER_ERROR;
     if (!(error instanceof Error)) {
       return res.status(Number(errorCode)).json(error);
     }
 
     const { name, message, stack, cause } = error;
-    return res.status(errorCode)
+    return res.status(Number(errorCode))
       .json({ name, message, stack, cause });
   }
 
@@ -107,7 +112,6 @@ export class ExpressApplication {
           2. Check if function name is correctly listed in function map.
           3. Check if method enum is correctly listed in function map.`);
       }
-
       const controllerMethodRoute = this.controllerMethodWrapper(
         controller,
         methodName);

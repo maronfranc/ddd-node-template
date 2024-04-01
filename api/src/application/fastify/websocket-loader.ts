@@ -1,3 +1,4 @@
+import { DomainException } from "../../domain/library/exceptions/domain.exception";
 import { IInitOption, ILogger, IWebsocketGateway } from "../application.interfaces";
 import { HealthcheckWebsocket } from "../controller/healthcheck/healthcheck.websocket";
 import { TodoListWebsocket } from "../controller/todo-list/todo-list.websocket";
@@ -9,7 +10,7 @@ import { FastifyApp, FastifyWebsocketFunction } from "./fastify.interface";
 
 export class WebsocketLoader {
   private basePrefix = '';
-  private logger: ILogger = console;
+  private logger?: ILogger;
 
   private WsGateways: IWebsocketGateway[] = [
     HealthcheckWebsocket,
@@ -17,7 +18,7 @@ export class WebsocketLoader {
   ];
 
   public init(opt?: IInitOption): this {
-    this.logger = opt?.logger ?? this.logger;
+    this.logger = opt?.logger;
     this.basePrefix = opt?.basePrefix ?? this.basePrefix;
     return this;
   }
@@ -46,7 +47,7 @@ export class WebsocketLoader {
       const completePath = `${path}${routePath}`;
       app.get(
         completePath,
-        { beforeHandler: route.middlewares, websocket: true },
+        { preHandler: route.middlewares, websocket: true },
         gatewayMethodRoute,
       );
     }
@@ -63,7 +64,22 @@ export class WebsocketLoader {
         req,
         conn,
       });
-      conn.send(JSON.stringify({ message: "Connection success" }));
+      // conn.send(JSON.stringify({ message: "Connection success" }));
+
+      conn.on('error', (err) => {
+        const errMsg = new DomainException({
+          detail: err.message,
+          statusName: 'INTERNAL_SERVER_ERROR',
+        });
+        conn.send(JSON.stringify(errMsg))
+      });
+
+      conn.on('close', (code, data) => {
+        const errMsg: any = { message: `Connection closed with code ${code}` };
+        if (data) errMsg.data = data;
+        conn.send(JSON.stringify(errMsg));
+      });
+
       const response = await controller[methodName](...params);
       conn.send(JSON.stringify(response));
     }

@@ -13,4 +13,4 @@ export const headerException = {
     errors: [jsonSchema.authorization],
     statusName: 'BAD_REQUEST',
   }
-}
+} as const;

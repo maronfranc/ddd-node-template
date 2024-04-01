@@ -8,8 +8,8 @@ import { TodoListController } from './todo-list.controller';
 import { ITodoList } from '../../../infrastructure/entity-interfaces/todo-list.interface';
 import { HttpStatus } from '../../library/http/http-status.enum';
 import { ITodoItem } from '../../../infrastructure/entity-interfaces/todo-item.interface';
-import { TODO_ITEM_STATUS } from '../../../infrastructure/mongo/todo-list/todo-item/todo-item.schema';
 import { isFilledArrayKey } from '../../library/utils/type-validator';
+import { TODO_ITEM_STATUS } from '../../../infrastructure/mongo/todo-list/todo-list.schema';
 
 describe(TodoListController.name, () => {
   beforeAll(async () => {
@@ -17,9 +17,14 @@ describe(TodoListController.name, () => {
       throw new Error(`Attempted to test in a forbidden environment: ${configuration.build}`)
     }
     await infrastructure.init();
-    application.init();
+    await application.init();
     (application as any).Controllers = [TodoListController];
+    if (!application.testApp) {
+      throw new Error("Undefined `application.testApp`");
+    }
+    // await application.app.ready();
   });
+  afterAll(async () => await infrastructure.close());
 
   function range(size: number, startAt = 0) {
     return [...Array(size).keys()].map(i => i + startAt);
@@ -34,7 +39,7 @@ describe(TodoListController.name, () => {
   function mockTodoItem(): ITodoItem {
     const rng = `${Math.random()}`;
     return {
-      description: `Dev test todo item description ${rng}`,
+      body: `Dev test todo item description ${rng}`,
       status: 'pending',
     }
   }
@@ -44,7 +49,7 @@ describe(TodoListController.name, () => {
     const todoListPayload = mockTodoList();
     describe('POST /todo-list', () => {
       it('should create a new todo list', async () => {
-        const response = await supertest(application.app)
+        const response = await supertest(application.testApp!)
           .post('/todo-list')
           .send(todoListPayload);
         const body = response.body;
@@ -59,7 +64,7 @@ describe(TodoListController.name, () => {
     describe('PATCH /todo-list', () => {
       describe("description", () => {
         it('should update todo list', async () => {
-          const response = await supertest(application.app)
+          const response = await supertest(application.testApp!)
             .patch(`/todo-list/${testTodoListId}`)
             .send(<ITodoList>{
               title: updatedTitle,
@@ -74,7 +79,7 @@ describe(TodoListController.name, () => {
 
     describe('GET /todo-list/:id', () => {
       it('should return updated todo list', async () => {
-        const response = await supertest(application.app)
+        const response = await supertest(application.testApp!)
           .get(`/todo-list/${testTodoListId}`);
         const body = response.body;
         expect(body).toBeDefined();
@@ -90,7 +95,7 @@ describe(TodoListController.name, () => {
 
     describe('GET /todo-list', () => {
       it('should return a list of created todo-list', async () => {
-        const response = await supertest(application.app).get(`/todo-list`);
+        const response = await supertest(application.testApp!).get(`/todo-list`);
         const body = response.body;
         expect(body).toBeDefined();
         expect(body.todoLists).toBeArray();
@@ -100,7 +105,7 @@ describe(TodoListController.name, () => {
 
     describe("DELETE /todo-list/:id", () => {
       it("should delete todo list", async () => {
-        const response = await supertest(application.app)
+        const response = await supertest(application.testApp!)
           .delete(`/todo-list/${testTodoListId}`);
         const body = response.body;
         expect(body).toBeDefined();
@@ -109,7 +114,7 @@ describe(TodoListController.name, () => {
 
       describe("subsequent request", () => {
         it("should not return deleted todo list", async () => {
-          const response = await supertest(application.app)
+          const response = await supertest(application.testApp!)
             .get(`/todo-list/${testTodoListId}`);
           const body = response.body;
           expect(body).toBeDefined();
@@ -134,7 +139,7 @@ describe(TodoListController.name, () => {
     let testListId: string;
     beforeAll(async () => {
       const todoListPayload = mockTodoList();
-      const response = await supertest(application.app)
+      const response = await supertest(application.testApp!)
         .post('/todo-list')
         .send(todoListPayload);
       expect(response.body.todoList.id).toBeString();
@@ -155,7 +160,7 @@ describe(TodoListController.name, () => {
     describe('POST /todo-list/:id/item-batch', () => {
       describe("first items insert", () => {
         it('should add them to the list', async () => {
-          const response = await supertest(application.app)
+          const response = await supertest(application.testApp!)
             .post(`/todo-list/${testListId}/item-batch`)
             .send(payload.firstItems);
           const body = response.body;
@@ -166,7 +171,7 @@ describe(TodoListController.name, () => {
           firstTestItems = items;
 
           items.map((item) => {
-            expect(item.description).toBeString();
+            expect(item.body).toBeString();
             expect(item.status).toBeOneOf(TODO_ITEM_STATUS);
           });
         });
@@ -174,7 +179,7 @@ describe(TodoListController.name, () => {
 
       describe("second items insert", () => {
         it('should add them and not remove previous', async () => {
-          const response = await supertest(application.app)
+          const response = await supertest(application.testApp!)
             .post(`/todo-list/${testListId}/item-batch`)
             .send(payload.secondItems);
           const body = response.body;
@@ -183,7 +188,7 @@ describe(TodoListController.name, () => {
           expect(items).toBeArrayOfSize(SECOND_ITEM_PUSH);
 
           items.forEach((item) => {
-            expect(item.description).toBeString();
+            expect(item.body).toBeString();
             expect(item.status).toBeOneOf(TODO_ITEM_STATUS);
           });
         });
@@ -191,7 +196,7 @@ describe(TodoListController.name, () => {
 
       describe("subsequent request", () => {
         it("should have all generated items", async () => {
-          const response = await supertest(application.app)
+          const response = await supertest(application.testApp!)
             .get(`/todo-list/${testListId}`);
           const body = response.body;
           expect(body).toBeDefined();
@@ -209,7 +214,7 @@ describe(TodoListController.name, () => {
       describe('update some items', () => {
         it('should update items status', async () => {
           const payload = { items: firstTestItems, status: newStatus };
-          const response = await supertest(application.app)
+          const response = await supertest(application.testApp!)
             .patch(`/todo-list/${testListId}/item-batch/status`)
             .send(payload);
           const body = response.body;
@@ -235,7 +240,7 @@ describe(TodoListController.name, () => {
           /** Second request items */
           const pendingItems = [] as ITodoItem[];
           beforeAll(async () => {
-            const res = await supertest(application.app).get(`/todo-list/${testListId}`);
+            const res = await supertest(application.testApp!).get(`/todo-list/${testListId}`);
             expect(res.body.todoList).toBeDefined();
             expect(res.body.todoList.id).toBe(testListId);
             mostRecentListState = res.body.todoList;
@@ -274,18 +279,18 @@ describe(TodoListController.name, () => {
 
       beforeAll(async () => {
         const createListPayload = mockTodoList();
-        const createResponse = await supertest(application.app)
+        const createResponse = await supertest(application.testApp!)
           .post('/todo-list')
           .send(createListPayload);
         expect(createResponse.body.todoList.id).toBeString();
 
-        const createItemsResponse = await supertest(application.app)
+        const createItemsResponse = await supertest(application.testApp!)
           .post(`/todo-list/${testListId}/item-batch`)
           .send({ items: [mockTodoItem()] });
         expect(createItemsResponse.statusCode)
           .not.toBeGreaterThanOrEqual(400);
 
-        const getResponse = await supertest(application.app)
+        const getResponse = await supertest(application.testApp!)
           .get(`/todo-list/${testListId}`);
         expect(getResponse.statusCode)
           .not.toBeGreaterThanOrEqual(400);
@@ -299,12 +304,12 @@ describe(TodoListController.name, () => {
         status: ITodoItem['status'],
       ): Promise<Required<ITodoList>> {
         const payload = { items, status }
-        const updateResponse = await supertest(application.app)
+        const updateResponse = await supertest(application.testApp!)
           .patch(`/todo-list/${id}/item-batch/status`)
           .send(payload);
         expect(updateResponse.statusCode).not.toBeGreaterThanOrEqual(400);
 
-        const getResponse = await supertest(application.app)
+        const getResponse = await supertest(application.testApp!)
           .get(`/todo-list/${id}`)
           .send(payload);
         expect(getResponse.body.todoList).toBeDefined();
@@ -345,19 +350,19 @@ describe(TodoListController.name, () => {
 
     beforeAll(async () => {
       const createListPayload = mockTodoList();
-      const createResponse = await supertest(application.app)
+      const createResponse = await supertest(application.testApp!)
         .post('/todo-list')
         .send(createListPayload);
       expect(createResponse.body.todoList.id).toBeString();
       testListId = createResponse.body.todoList.id;
 
-      const createItemsResponse = await supertest(application.app)
+      const createItemsResponse = await supertest(application.testApp!)
         .post(`/todo-list/${testListId}/item-batch`)
         .send(payloadItems);
       expect(createItemsResponse.statusCode)
         .not.toBeGreaterThanOrEqual(400);
 
-      const getResponse = await supertest(application.app)
+      const getResponse = await supertest(application.testApp!)
         .get(`/todo-list/${testListId}`);
       expect(getResponse.statusCode)
         .not.toBeGreaterThanOrEqual(400);
@@ -370,13 +375,13 @@ describe(TodoListController.name, () => {
         const deletePayloadItems = range(ITEM_DELETE_COUNT)
           .map((i) => todoList.items[i]);
 
-        const deleteResponse = await supertest(application.app)
+        const deleteResponse = await supertest(application.testApp!)
           .delete(`/todo-list/${testListId}/item-batch`)
           .send({ items: deletePayloadItems });
         expect(deleteResponse.statusCode).toBe(HttpStatus.OK);
         expect(deleteResponse.body.deleted).toBe(true);
 
-        const getResponse = await supertest(application.app)
+        const getResponse = await supertest(application.testApp!)
           .get(`/todo-list/${testListId}`);
         expect(getResponse.statusCode).toBe(HttpStatus.OK);
         const body = getResponse.body;

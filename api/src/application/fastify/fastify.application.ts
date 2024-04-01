@@ -1,5 +1,5 @@
 import { IController, IInitOption } from "../application.interfaces";
-import Fastify from 'fastify'
+import Fastify, { FastifyInstance, RawServerDefault } from 'fastify'
 import websocket, { WebSocket } from '@fastify/websocket'
 import { HttpStatus } from "../library/http/http-status.enum";
 import { Next, Req, Res } from "./fastify.interface";
@@ -8,26 +8,34 @@ import { MethodMetadata, ParamTag, REQ_PARAM_KEY } from "../library/decorators/r
 import { domainException } from "../../domain/library/exceptions/exception-map";
 import websocketLoader from "./websocket-loader";
 import controllerLoader from "./controller-loader";
+import { configuration } from "../../environment";
 
 export class FastifyApplication {
-  public app = Fastify({ logger: true });
+  public app: FastifyInstance;
+  public testApp?: RawServerDefault;
 
-  public init(opt?: IInitOption) {
-    this.app.register(websocket)
+  public constructor() {
+    this.app = Fastify();
+    if (configuration.build === 'test') {
+      this.testApp = this.app.server;
+    }
+  }
+
+  public async init(opt?: IInitOption) {
     this.app.register(
       async (app) => controllerLoader.init(opt).load(app)
-    )
+    );
+    this.app.register(websocket);
     this.app.register(
       async (app) => websocketLoader.init(opt).load(app)
-    )
+    );
     this.app.all('*', this.routeNotFound);
     this.app.setErrorHandler(this.errorMiddleware);
+    await this.app.ready();
   }
 
   public listen(port: number, callback: (err: Error | null) => void) {
-    this.app.ready().then(() =>
-      this.app.listen({ port, host: '0.0.0.0' }, callback)
-    );
+    this.app.listen({ port, host: '0.0.0.0' }, callback);
   }
 
   private routeNotFound(_: Req, res: Res) {

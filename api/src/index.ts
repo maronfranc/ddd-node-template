@@ -9,13 +9,8 @@ async function main() {
       console.info('================================================');
       console.info('Database connected');
       console.info('================================================');
-    })
-    .catch((error) => {
-      console.info('================================================');
-      console.info('Database connection error', error);
-      console.info('================================================');
     });
-  application.init({ basePrefix: '/api', logger: console });
+  await application.init({ basePrefix: '/api', logger: console });
   application.listen(configuration.api.port, () => {
     console.info('================================================');
     console.info(`Server is running at ${configuration.api.host}`);

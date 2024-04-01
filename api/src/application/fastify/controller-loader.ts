@@ -12,7 +12,7 @@ import { getDecoratedParams } from "./fastify.application";
 
 export class ControllerLoader {
   private basePrefix = '';
-  private logger: ILogger = console;
+  private logger?: ILogger
   private Controllers: IController[] = [
     AuthController,
     ExampleController,
@@ -21,7 +21,7 @@ export class ControllerLoader {
   ];
 
   public init(opt?: IInitOption): this {
-    this.logger = opt?.logger ?? this.logger;
+    this.logger = opt?.logger;
     this.basePrefix = opt?.basePrefix ?? this.basePrefix;
     return this;
   }
@@ -56,18 +56,13 @@ export class ControllerLoader {
         methodName);
       const completePath = `${this.basePrefix}${path}${routePath}`;
 
-      if (Array.isArray(route.middlewares) && route.middlewares.length >= 1) {
-        app[httpVerb](
-          completePath,
-          { beforeHandler: route.middlewares },
-          controllerMethodRoute,
-        );
-      } else {
-        app[httpVerb](
-          completePath,
-          controllerMethodRoute as any,
-        );
-      }
+      app[httpVerb](
+        completePath,
+        {
+          preHandler: route.middlewares,
+          handler: controllerMethodRoute,
+        },
+      );
     }
   }
 
@@ -75,17 +70,18 @@ export class ControllerLoader {
     controller: any,
     methodName: string,
   ): FastifyRouteFunction {
-    return async (req, reply, next) => {
+    return async (req, res, next) => {
+      console.log(`[Log(${typeof next}):next]:`, next);
       const params = getDecoratedParams({
         controller,
         methodName,
         req,
-        res: reply,
+        res,
         next,
       }
       );
       const response = await controller[methodName](...params);
-      return reply.send(response);
+      return res.send(response);
     }
   }
 

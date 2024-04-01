@@ -11,7 +11,8 @@ import { IUserWithOmittedData } from "../../infrastructure/interfaces/user.inter
 import { HttpVerb } from "../library/interfaces/request-method";
 import { WebSocket } from '@fastify/websocket'
 
-export type Req = FastifyRequest; export type Res = FastifyReply;
+export type Req = FastifyRequest;
+export type Res = FastifyReply;
 export type Next = any;
 export type FastifyRouteFunction = (req: any, res: any, next: Next) => void;
 export type Middleware = FastifyRouteFunction;
