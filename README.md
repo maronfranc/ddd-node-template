@@ -24,29 +24,5 @@ docker-compose --file ./docker/test/docker-compose.yml up
 # yarn or other package manager
 cd api && yarn
 yarn test
-yarn start:dev
-```
-
-### Production build
-Production [docker-compose](./docker/prod/docker-compose.yml) is running an API container using the [.api.env](./docker/prod/.api.env) vars.
-```sh
-# Add `--build` flag to update api code.
-docker-compose --file ./docker/prod/docker-compose.yml up 
-```
-
-### API requests
-```sh
-DEV_API_HOST=http://localhost:3000
-PROD_API_HOST=http://localhost:4001
-API_HOST=${PROD_API_HOST}
-
-# Health check.
-curl ${API_HOST}/healthcheck
-
-# Create example in database.
-curl -XPOST ${API_HOST}/example/create \
-  -H "Content-Type: application/json" \
-  --data '{"title": "Manual_test_example"}' 
-# List created examples.
-curl ${API_HOST}/example
+yarn dev
 ```

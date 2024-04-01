@@ -1,5 +1,4 @@
 import { Types } from 'mongoose';
-import ChangeStreamDocument from 'mongoose';
 import { ITodoList } from '../../entity-interfaces/todo-list.interface';
 import { BaseRepository } from '../base.repository';
 import TodoListSchema from './todo-list.schema';
@@ -47,7 +46,6 @@ class TodoListRepository extends BaseRepository<ITodoList> {
           "items.$[elem].completedAt": status === 'complete' ? new Date() : null,
         },
       },
-
       {
         arrayFilters: [
           { "elem._id": { $in: _itemIds } }
