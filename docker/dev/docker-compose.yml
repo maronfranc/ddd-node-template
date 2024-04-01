@@ -11,10 +11,10 @@ services:
       - 27017:27017
     entrypoint: ["mongod", "--replSet", "devReplicaSet", "--bind_ip", "localhost,dev-mongo-rs0-1"]
 
-  dev-mongo-rs0-1:
+  dev-mongo-rs0-2:
     image: mongo:6.0.13
-    hostname: dev-mongo-rs0-3
-    container_name: dev-mongo-rs0-3
+    hostname: dev-mongo-rs0-2
+    container_name: dev-mongo-rs0-2
     ports:
       - 27018:27017
     volumes:
