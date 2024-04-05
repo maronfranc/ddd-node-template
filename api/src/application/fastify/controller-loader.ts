@@ -1,6 +1,5 @@
 import { IController, IInitOption, ILogger } from "../application.interfaces";
 import { AuthController } from "../controller/auth/auth.controller";
-import { ExampleController } from "../controller/example/example.controller";
 import { HealthcheckController } from "../controller/healthcheck/healthcheck.controller";
 import { TodoListController } from "../controller/todo-list/todo-list.controller";
 import { PATH_METADATA } from "../library/decorators";
@@ -15,7 +14,6 @@ export class ControllerLoader {
   private logger?: ILogger
   private Controllers: IController[] = [
     AuthController,
-    ExampleController,
     HealthcheckController,
     TodoListController,
   ];

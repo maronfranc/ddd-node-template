@@ -16,7 +16,6 @@ Container with infrastructure databases.
 ### Dev/test build
 #### Terminal 1
 ```sh
-# Add flag `--force-recreate` to flush previous container data if the file system is ramfs.
 docker-compose --file ./docker/test/docker-compose.yml up
 ```
 #### Terminal 2
