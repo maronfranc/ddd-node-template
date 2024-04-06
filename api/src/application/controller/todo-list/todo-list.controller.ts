@@ -1,29 +1,28 @@
-import { DomainException, IDomainException } from "../../../domain/library/exceptions/domain.exception";
+import { DomainException } from "../../../domain/library/exceptions/domain.exception";
 import { domainException } from "../../../domain/library/exceptions/exception-map";
 import { todoItemException } from "../../../domain/todo-list/todo-item/todo-item.exception";
-import { TodoListService } from "../../../domain/todo-list/todo-list.service";
+import todoListService from "../../../domain/todo-list/todo-list.service";
 import { ITodoItem } from "../../../infrastructure/entity-interfaces/todo-item.interface";
+import { ITodoList } from "../../../infrastructure/entity-interfaces/todo-list.interface";
 import { TODO_ITEM_STATUS } from "../../../infrastructure/mongo/todo-list/todo-list.schema";
 import { Controller } from "../../library/decorators/controller.decorator";
 import { Get, Patch, Post, Delete } from "../../library/decorators/request-mapping.decorator";
 import { Body, Param } from "../../library/decorators/route-params";
 import { isFilledArray, isFilledArrayKey, isOneOf } from "../../library/utils/type-validator";
-import { CreateTodoItemDto } from "./dto/create-item.dto";
-import { CreateTodoListDto } from "./dto/create-todo-list.dto";
-import { UpdateTodoListDto } from "./dto/update-todo-list.dto";
+import { validateCreateTodoItemDto } from "./dto/create-item.dto";
+import { validateCreateTodoListDto } from "./dto/create-todo-list.dto";
+import { validateUpdateTodoListDto } from "./dto/update-todo-list.dto";
 
 @Controller("list")
 export class TodoListController {
   @Get()
   public async find() {
-    const todoListService = new TodoListService();
     const todoLists = await todoListService.findMany({});
     return { todoLists }
   }
 
   @Get(':id')
   public async findById(@Param('id') id: string) {
-    const todoListService = new TodoListService();
     const todoList = await todoListService.findById(id);
     if (!todoList) {
       throw new DomainException(domainException['not-found']);
@@ -33,37 +32,37 @@ export class TodoListController {
 
   @Get(':id/item/count')
   public async count(@Param('id') id: string) {
-    const todoListService = new TodoListService();
     const result = await todoListService.countItemsStatus(id);
     return { count: result };
   }
 
   @Post()
-  public async create(@Body() body: CreateTodoListDto) {
-    const dto = new CreateTodoListDto(body)
-    const todoListService = new TodoListService();
+  public async create(@Body() body: ITodoList) {
+    const { error, result: dto } = validateCreateTodoListDto(body)
+    if (error) throw new DomainException(error);
+
     const todoList = await todoListService.create(dto);
     return { todoList };
   }
 
   @Patch(":id")
-  public async update(@Param('id') id: string, @Body() body: UpdateTodoListDto) {
-    const todoListService = new TodoListService();
-    const dto = new UpdateTodoListDto(body);
+  public async update(@Param('id') id: string, @Body() body: ITodoItem) {
+    const { error, result: dto } = validateUpdateTodoListDto(body);
+    if (error) throw new DomainException(error);
+
     const isUpdated = await todoListService.updateById(id, dto);
     return {
-      todoList: { id, },
+      todoList: { id },
       updated: isUpdated,
     };
   }
 
   @Delete(":id")
   public async delete(@Param('id') id: string) {
-    const todoListService = new TodoListService();
     const isDeleted = await todoListService.delete(id)
     return {
       todoList: { id },
-      deleted: isDeleted
+      deleted: isDeleted,
     };
   }
 
@@ -72,12 +71,16 @@ export class TodoListController {
     @Param('id') id: string,
     @Body() body: { items: ITodoItem[] },
   ) {
-    const todoListService = new TodoListService();
     if (!isFilledArray<ITodoItem>(body.items)) {
       throw new DomainException(todoItemException["invalid-array-of-items"]);
     }
 
-    const dto = body.items.map((b) => new CreateTodoItemDto(b))
+    const dto = body.items.map((b) => {
+      const { error, result: validDto } = validateCreateTodoItemDto(b);
+      if (error) throw new DomainException(error);
+      return validDto;
+    })
+
     const items = await todoListService.createManyItems(id, dto)
     return { todoList: { id, items } };
   }
@@ -87,7 +90,6 @@ export class TodoListController {
     @Param('id') id: string,
     @Body() body: { status: string; items: Pick<ITodoItem, 'id'>[] },
   ) {
-    const todoListService = new TodoListService();
     const newStatus = body.status as string;
     if (!isOneOf(newStatus, [...TODO_ITEM_STATUS])) {
       throw new DomainException(todoItemException["invalid-item-status"])
@@ -113,7 +115,6 @@ export class TodoListController {
     @Param('id') id: string,
     @Body() body: { items: Pick<ITodoItem, 'id'>[] },
   ) {
-    const todoListService = new TodoListService();
     const items = body.items;
     if (!isFilledArrayKey(items, 'id')) {
       throw new DomainException(

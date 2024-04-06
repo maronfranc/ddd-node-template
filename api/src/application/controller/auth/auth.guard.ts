@@ -1,4 +1,4 @@
-import { TokenService } from "../../../domain/auth";
+import tokenService from "../../../domain/auth/token.service";
 import { DomainException } from "../../../domain/library/exceptions/domain.exception";
 import { headerException } from "../../../domain/library/exceptions/header.exception";
 import { IUserWithOmittedData } from "../../../infrastructure/interfaces/user.interface";
@@ -12,7 +12,6 @@ export class AuthGuard {
     }
 
     try {
-      const tokenService = new TokenService();
       const [, token] = bearerToken.split(' ');
       const tokenUser = tokenService.verifyToken(token) as IUserWithOmittedData;
       req.user = tokenUser;

@@ -1,10 +1,9 @@
-
-import { DomainException } from "../../../../domain/library/exceptions/domain.exception";
+import { DomainException, HasError } from "../../../../domain/library/exceptions/domain.exception";
 import { todoListException } from "../../../../domain/todo-list/todo-list.exception";
 import { ITodoItem } from "../../../../infrastructure/entity-interfaces/todo-item.interface";
 import { TODO_ITEM_STATUS } from "../../../../infrastructure/mongo/todo-list/todo-list.schema";
 
-export class CreateTodoItemDto {
+class CreateTodoItemDto {
   body: ITodoItem['body'];
   status: ITodoItem['status'];
 
@@ -18,5 +17,13 @@ export class CreateTodoItemDto {
 
     this.body = unknownDto.body;
     this.status = unknownDto.status ?? 'pending';
+  }
+}
+
+export function validateCreateTodoItemDto(unknownDto: any): HasError<CreateTodoItemDto> {
+  try {
+    return { result: new CreateTodoItemDto(unknownDto) };
+  } catch (error: any) {
+    return { error };
   }
 }

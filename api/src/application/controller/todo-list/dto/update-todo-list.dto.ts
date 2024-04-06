@@ -1,8 +1,8 @@
-import { DomainException } from "../../../../domain/library/exceptions/domain.exception";
+import { DomainException, HasError } from "../../../../domain/library/exceptions/domain.exception";
 import { todoListException } from "../../../../domain/todo-list/todo-list.exception";
 import { ITodoList } from "../../../../infrastructure/entity-interfaces/todo-list.interface";
 
-export class UpdateTodoListDto {
+class UpdateTodoListDto {
   title?: ITodoList['title'];
   description?: ITodoList['description'];
 
@@ -16,5 +16,13 @@ export class UpdateTodoListDto {
 
     this.title = unknownDto.title
     this.description = unknownDto.description
+  }
+}
+
+export function validateUpdateTodoListDto(unknownDto: any): HasError<UpdateTodoListDto> {
+  try {
+    return { result: new UpdateTodoListDto(unknownDto) };
+  } catch (error: any) {
+    return { error };
   }
 }

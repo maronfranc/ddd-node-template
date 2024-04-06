@@ -6,11 +6,11 @@ import { HasError } from '../library/exceptions/domain.exception';
 import { domainException } from '../library/exceptions/exception-map';
 import { userException } from '../user/user.exception';
 import { authException } from './auth.exception';
-import { CryptoService } from './crypto.service';
+import cryptoService from './crypto.service';
 import { ICredentials } from "./interfaces/credentials.interface";
-import { TokenService } from './token.service';
+import tokenService from './token.service';
 
-export class AuthService {
+class AuthService {
   private readonly userRepository = infrastructure.repositories.user
 
   public async registerUser(user: IUser): Promise<HasError<IUserWithOmittedData>> {
@@ -23,7 +23,6 @@ export class AuthService {
       return { error: authException['email-already-exists'] };
     }
 
-    const cryptoService = new CryptoService();
     user.salt = await cryptoService.genSalt();
     user.password = await cryptoService.hash(user.password, user.salt);
     const createdUser = await this.userRepository.create(user);
@@ -41,13 +40,11 @@ export class AuthService {
       return { error: userException['user-by-email-not-found'] };
     }
 
-    const tokenService = new TokenService();
     const token = await tokenService.generateToken({ ...user });
     return { result: { token } };
   }
 
   public async generateToken(user: IUserWithOmittedData) {
-    const tokenService = new TokenService();
     return tokenService.generateToken(user);
   }
 
@@ -71,7 +68,6 @@ export class AuthService {
       return { error: domainException['internal-server-error'] };
     }
 
-    const cryptoService = new CryptoService();
     const isPasswordCorrect = await cryptoService.compareUserPasswords(
       unhashedPassword,
       userWithSensitiveData
@@ -97,3 +93,5 @@ export class AuthService {
     return safeUser as IUserWithOmittedData;
   }
 }
+
+export default new AuthService();

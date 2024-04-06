@@ -1,7 +1,7 @@
 import bcrypt from 'bcrypt';
 import { IUser } from '../../infrastructure/entity-interfaces/user.interface';
 
-export class CryptoService {
+class CryptoService {
   private SALT_ROUNDS = 10;
   public async hash(unhashedPassword: string, salt: string): Promise<string> {
     return bcrypt.hash(unhashedPassword, salt);
@@ -18,3 +18,5 @@ export class CryptoService {
     return password === user.password;
   }
 }
+
+export default new CryptoService();

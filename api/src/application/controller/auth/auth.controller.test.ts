@@ -6,7 +6,7 @@ import infrastructure from '../../../infrastructure/Infrastructure';
 import application from '../../application';
 import { HttpStatus } from '../../library/http/http-status.enum';
 import { AuthController } from './auth.controller';
-import { IRegisterUserDto } from './dto';
+import { IRegisterUserDto } from './dto/register-user.dto';
 
 describe('AuthController', () => {
   beforeAll(async () => {

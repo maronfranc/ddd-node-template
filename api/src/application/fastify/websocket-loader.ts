@@ -70,24 +70,28 @@ export class WebsocketLoader {
       }
       // conn.send(JSON.stringify({ message: "Connection success" }));
 
-      conn.on('error', (err) => {
-        const errMsg: IDomainException = {
-          detail: err.message,
-          statusName: 'INTERNAL_SERVER_ERROR',
-        };
-        conn.send(JSON.stringify(errMsg))
-      });
+      try {
+        conn.on('error', (err) => {
+          const errMsg: IDomainException = {
+            detail: err.message,
+            statusName: 'INTERNAL_SERVER_ERROR',
+          };
+          conn.send(JSON.stringify(errMsg))
+        });
 
-      conn.on('close', (code, data) => {
-        const error: any = {
-          detail: `Connection closed with code ${code}`,
-          data,
-        };
-        conn.send(JSON.stringify(error));
-      });
+        conn.on('close', (code, data) => {
+          const error: any = {
+            detail: `Connection closed with code ${code}`,
+            data,
+          };
+          conn.send(JSON.stringify(error));
+        });
 
-      const response = await controller[methodName](...params);
-      conn.send(JSON.stringify(response));
+        const response = await controller[methodName](...params);
+        conn.send(JSON.stringify(response));
+      } catch (err: any) {
+        conn.send(err);
+      }
     }
   }
 }
