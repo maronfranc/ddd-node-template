@@ -34,13 +34,13 @@ export const authException = {
     statusName: 'BAD_REQUEST'
   },
   'invalid-first-name': <IDomainException>{
-    detail: 'Invalid name',
+    detail: 'Invalid first name',
     code: 'auth-0006',
     errors: [jsonSchema.auth.firstName],
     statusName: 'BAD_REQUEST'
   },
   'invalid-last-name': <IDomainException>{
-    detail: 'Invalid name',
+    detail: 'Invalid last name',
     code: 'auth-0007',
     errors: [jsonSchema.auth.lastName],
     statusName: 'BAD_REQUEST'

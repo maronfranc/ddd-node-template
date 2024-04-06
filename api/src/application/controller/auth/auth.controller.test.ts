@@ -128,6 +128,7 @@ describe('AuthController', () => {
         .send(payloadLogin);
       const body = response.body;
       expect(body.token).toBeString();
+
       loginToken = body.token;
       expect(response.status).toBe(HttpStatus.OK);
     });

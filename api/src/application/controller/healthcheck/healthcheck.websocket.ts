@@ -7,7 +7,7 @@ import { WebSocket } from '@fastify/websocket'
 export class HealthcheckWebsocket {
   @Get('ping')
   public async ping(@WsConnection() conn: WebSocket) {
-    conn.on('message', async (msgRaw) => {
+    conn.on('message', async (_msgRaw) => {
       // const msg = JSON.parse(msgRaw.toString());
       conn.send(JSON.stringify({ message: "Message received" }))
     });

@@ -8,6 +8,7 @@ export interface IDomainException {
   code?: Readonly<string>;
   errors?: Readonly<any[]>;
 }
+
 /**
  * Exception to format error to client.
  */
@@ -28,3 +29,7 @@ export class DomainException extends Error implements IDomainException {
     }
   }
 }
+
+export type HasError<T = any> =
+  | { result: T; error?: null }
+  | { result?: null; error: IDomainException; }

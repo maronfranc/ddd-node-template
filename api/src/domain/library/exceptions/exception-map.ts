@@ -9,14 +9,19 @@ export const domainException = {
     code: 'http-404',
     statusName: 'NOT_FOUND',
   },
+  'unprocessable-entity': <IDomainException>{
+    detail: 'Unprocessable entity',
+    code: `http-${HttpStatus.UNPROCESSABLE_ENTITY}`,
+    statusName: 'UNPROCESSABLE_ENTITY',
+  },
   'internal-server-error': <IDomainException>{
     detail: 'Internal server error',
     code: 'http-500',
     statusName: 'INTERNAL_SERVER_ERROR',
   },
-  'not-implemented': {
-    detail: 'Not implmeneted',
-    code: 'http-' + HttpStatus.NOT_IMPLEMENTED,
+  'not-implemented': <IDomainException>{
+    detail: 'Not implemented',
+    code: `http-${HttpStatus.NOT_IMPLEMENTED}`,
     statusName: 'NOT_IMPLEMENTED',
   },
 } as const;

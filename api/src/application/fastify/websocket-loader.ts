@@ -1,4 +1,4 @@
-import { DomainException } from "../../domain/library/exceptions/domain.exception";
+import { IDomainException } from "../../domain/library/exceptions/domain.exception";
 import { IInitOption, ILogger, IWebsocketGateway } from "../application.interfaces";
 import { HealthcheckWebsocket } from "../controller/healthcheck/healthcheck.websocket";
 import { TodoListWebsocket } from "../controller/todo-list/todo-list.websocket";
@@ -58,26 +58,32 @@ export class WebsocketLoader {
     methodName: string,
   ): FastifyWebsocketFunction {
     return async (conn, req) => {
-      const params = getDecoratedParams({
+      const { error, result: params } = getDecoratedParams({
         controller,
         methodName,
         req,
         conn,
       });
+      if (error) {
+        conn.send(JSON.stringify(error));
+        return conn.close();
+      }
       // conn.send(JSON.stringify({ message: "Connection success" }));
 
       conn.on('error', (err) => {
-        const errMsg = new DomainException({
+        const errMsg: IDomainException = {
           detail: err.message,
           statusName: 'INTERNAL_SERVER_ERROR',
-        });
+        };
         conn.send(JSON.stringify(errMsg))
       });
 
       conn.on('close', (code, data) => {
-        const errMsg: any = { message: `Connection closed with code ${code}` };
-        if (data) errMsg.data = data;
-        conn.send(JSON.stringify(errMsg));
+        const error: any = {
+          detail: `Connection closed with code ${code}`,
+          data,
+        };
+        conn.send(JSON.stringify(error));
       });
 
       const response = await controller[methodName](...params);

@@ -1,6 +1,6 @@
 import { authException } from "../../../../domain/auth/auth.exception";
 import { INVALID_DATE } from "../../../../domain/library/common/constants";
-import { DomainException } from "../../../../domain/library/exceptions/domain.exception";
+import { DomainException, HasError } from "../../../../domain/library/exceptions/domain.exception";
 import { jsonSchema } from "../../../../domain/library/exceptions/json-schema";
 
 export interface IRegisterUserDto {
@@ -11,12 +11,13 @@ export interface IRegisterUserDto {
   birthDate: Date;
 }
 
-export class RegisterUserDto implements IRegisterUserDto {
+class RegisterUserDto implements IRegisterUserDto {
   public email: IRegisterUserDto['email'];
   public password: IRegisterUserDto['password'];
   public firstName: IRegisterUserDto['firstName'];
   public lastName: IRegisterUserDto['lastName'];
   public birthDate: IRegisterUserDto['birthDate'];
+
   public constructor(user: IRegisterUserDto) {
     this.email = user.email.trim().toLowerCase();
     if (!new RegExp(jsonSchema.auth.email.pattern).test(this.email)) {
@@ -44,5 +45,13 @@ export class RegisterUserDto implements IRegisterUserDto {
     this.birthDate = user.birthDate;
     this.firstName = user.firstName;
     this.lastName = user.lastName;
+  }
+}
+
+export function validateRegisterUserDto(user: IRegisterUserDto): HasError<RegisterUserDto> {
+  try {
+    return { result: new RegisterUserDto(user) };
+  } catch (error: any) {
+    return { error };
   }
 }

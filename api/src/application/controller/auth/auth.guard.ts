@@ -10,6 +10,7 @@ export class AuthGuard {
     if (!bearerToken) {
       throw new DomainException(headerException["bearer-token-not-provided"]);
     }
+
     try {
       const tokenService = new TokenService();
       const [, token] = bearerToken.split(' ');

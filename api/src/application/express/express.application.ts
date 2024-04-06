@@ -1,6 +1,5 @@
 import express, { Express, Router } from 'express';
 import swaggerUi from 'swagger-ui-express';
-import { DomainException } from '../../domain/library/exceptions/domain.exception';
 import { IController, IInitOption, ILogger } from '../application.interfaces';
 import { AuthController } from '../controller/auth/auth.controller';
 import { HealthcheckController } from '../controller/healthcheck/healthcheck.controller';
@@ -13,8 +12,9 @@ import { ExpressHttpVerb, ExpressRouteFunction, Next, Req, Res } from './express
 import { openApi } from './openapi';
 import { TodoListController } from '../controller/todo-list/todo-list.controller';
 import { MethodMetadata, ParamTag, REQ_PARAM_KEY } from '../library/decorators/route-params';
-import { domainException } from '../../domain/library/exceptions/exception-map';
 import { configuration } from '../../environment';
+import { HasError, IDomainException } from '../../domain/library/exceptions/domain.exception';
+import { mapTagToReqParam } from './map-tag-to-req-param';
 
 export class ExpressApplication {
   private basePreffix = '';
@@ -61,7 +61,7 @@ export class ExpressApplication {
     return res.status(HttpStatus.NOT_FOUND).send(message);
   }
 
-  private errorMiddleware(error: DomainException | any, _req: Req, res: Res, _next: Next) {
+  private errorMiddleware(error: IDomainException | any, _req: Req, res: Res, _next: Next) {
     const errorCode = HttpStatus[error?.statusName]
       ?? HttpStatus.INTERNAL_SERVER_ERROR;
     if (!(error instanceof Error)) {
@@ -125,25 +125,20 @@ export class ExpressApplication {
     this.app.use(path, controllerSubRouter);
   }
 
-  private mapTagToReqParam(paramTag: ParamTag): keyof Req {
-    if (paramTag === ParamTag.PARAM) return 'params';
-    if (paramTag === ParamTag.BODY) return 'body';
-    if (paramTag === ParamTag.QUERY) return 'query';
-    throw new DomainException(domainException['internal-server-error']);
-  }
-
   private controllerMethodWrapper(
     controller: any,
     methodName: string,
   ): ExpressRouteFunction {
     return async (req, res, next) => {
       try {
-        const params = this.getDecoratedParams(
+        const { error, result: params } = this.getDecoratedParams(
           controller,
           methodName,
           req,
           res,
           next);
+        if (error) return next(error);
+
         const response = await controller[methodName](...params);
         return res.send(response);
       } catch (err: any) {
@@ -158,12 +153,13 @@ export class ExpressApplication {
     req: Req,
     res: Res,
     next: Next,
-  ) {
+  ): HasError<unknown[]> {
     const methodMetadatas: MethodMetadata = Reflect.getMetadata(
       REQ_PARAM_KEY,
       controller,
       methodName);
-    if (!methodMetadatas) return [];
+    if (!methodMetadatas) return { result: [] };
+
     /** Decorator loads params in reverse order .*/
     let reverseIndex = methodMetadatas.length - 1;
     const params: any[] = [];
@@ -178,11 +174,14 @@ export class ExpressApplication {
       } if (paramTagEnum === ParamTag.BODY) {
         params.push(req.body);
       } else if (paramName) {
-        const reqMap = req[this.mapTagToReqParam(paramTagEnum)];
+        const { error, result: param } = mapTagToReqParam(paramTagEnum);
+        if (error) return { error }
+
+        const reqMap = req[param as keyof typeof req];
         params.push(reqMap[paramName]);
       }
     }
-    return params;
+    return { result: params };
   }
 
   private loadSwagger() {

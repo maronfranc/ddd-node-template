@@ -14,13 +14,13 @@ export const todoItemException = {
     errors: [todoItemJsonSchema.status],
     statusName: 'BAD_REQUEST',
   },
-  'invalid-array-of-items': {
+  'invalid-array-of-items': <IDomainException>{
     detail: 'Invalid todoList.items',
     code: 'todo-item-0003',
     errors: [todoItemsJsonSchema],
     statusName: 'BAD_REQUEST',
   },
-  'invalid-array-of-items-id': {
+  'invalid-array-of-items-id': <IDomainException>{
     detail: 'Invalid todoList.items.$.id',
     code: 'todo-item-0004',
     errors: [{

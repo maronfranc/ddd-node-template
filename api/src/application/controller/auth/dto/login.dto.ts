@@ -1,12 +1,13 @@
 import { authException } from "../../../../domain/auth/auth.exception";
-import { DomainException } from "../../../../domain/library/exceptions/domain.exception";
+import { DomainException, HasError } from "../../../../domain/library/exceptions/domain.exception";
 import { jsonSchema } from "../../../../domain/library/exceptions/json-schema";
 
 export interface ILoginDto {
   email: string;
   password: string;
 }
-export class LoginDto {
+
+class LoginDto {
   public email: string;
   public password: string;
   public constructor(login: ILoginDto) {
@@ -21,5 +22,13 @@ export class LoginDto {
       throw new DomainException(authException['invalid-credentials']);
     }
     this.password = login.password;
+  }
+}
+
+export function validateLoginDto(login: ILoginDto): HasError<LoginDto> {
+  try {
+    return { result: new LoginDto(login) };
+  } catch (error: any) {
+    return { error };
   }
 }

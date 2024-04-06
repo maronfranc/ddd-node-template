@@ -3,12 +3,12 @@ import Fastify, { FastifyInstance, RawServerDefault } from 'fastify'
 import websocket, { WebSocket } from '@fastify/websocket'
 import { HttpStatus } from "../library/http/http-status.enum";
 import { Next, Req, Res } from "./fastify.interface";
-import { DomainException } from "../../domain/library/exceptions/domain.exception";
 import { MethodMetadata, ParamTag, REQ_PARAM_KEY } from "../library/decorators/route-params";
-import { domainException } from "../../domain/library/exceptions/exception-map";
 import websocketLoader from "./websocket-loader";
 import controllerLoader from "./controller-loader";
 import { configuration } from "../../environment";
+import { HasError, IDomainException } from "../../domain/library/exceptions/domain.exception";
+import { mapTagToReqParam } from "./map-tag-to-req-param";
 
 export class FastifyApplication {
   public app: FastifyInstance;
@@ -43,7 +43,7 @@ export class FastifyApplication {
     return res.status(HttpStatus.NOT_FOUND).send(message);
   }
 
-  private errorMiddleware(error: DomainException | any, _req: Req, res: Res) {
+  private errorMiddleware(error: IDomainException | any, _req: Req, res: Res) {
     const errorCode = HttpStatus[error?.statusName]
       ?? HttpStatus.INTERNAL_SERVER_ERROR;
     if (!(error instanceof Error)) {
@@ -53,13 +53,6 @@ export class FastifyApplication {
     return res.status(Number(errorCode))
       .send({ name, message, stack, cause });
   }
-}
-
-export function mapTagToReqParam(paramTag: ParamTag): keyof Req {
-  if (paramTag === ParamTag.PARAM) return 'params';
-  if (paramTag === ParamTag.BODY) return 'body';
-  if (paramTag === ParamTag.QUERY) return 'query';
-  throw new DomainException(domainException['internal-server-error']);
 }
 
 interface IServerObject {
@@ -77,12 +70,13 @@ export function getDecoratedParams({
   res,
   next,
   conn,
-}: IServerObject) {
+}: IServerObject): HasError<unknown[]> {
   const methodMetadatas: MethodMetadata = Reflect.getMetadata(
     REQ_PARAM_KEY,
     controller,
     methodName);
-  if (!methodMetadatas) return [];
+  if (!methodMetadatas) return { result: [] };
+
   /** Decorator loads params in reverse order .*/
   let reverseIndex = methodMetadatas.length - 1;
   const params: any[] = [];
@@ -100,10 +94,12 @@ export function getDecoratedParams({
     } else if (paramTagEnum === ParamTag.WS_CONNECTION) {
       params.push(conn);
     } else if (paramName) {
-      const reqMap =
-        req[mapTagToReqParam(paramTagEnum)] as Record<string, string>;
+      const { error, result: param } = mapTagToReqParam(paramTagEnum);
+      if (error) return { error }
+
+      const reqMap = req[param] as Record<string, string>;
       params.push(reqMap[paramName]);
     }
   }
-  return params;
+  return { result: params };
 }

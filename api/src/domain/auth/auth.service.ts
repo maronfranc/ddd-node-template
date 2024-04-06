@@ -2,7 +2,8 @@ import infrastructure from '../../infrastructure/Infrastructure';
 import { IUser } from '../../infrastructure/entity-interfaces/user.interface';
 import { IUserWithOmittedData } from '../../infrastructure/interfaces/user.interface';
 import { IObjectBoolean } from '../../infrastructure/mongo/interfaces/object-boolean.interface';
-import { DomainException } from '../library/exceptions/domain.exception';
+import { HasError } from '../library/exceptions/domain.exception';
+import { domainException } from '../library/exceptions/exception-map';
 import { userException } from '../user/user.exception';
 import { authException } from './auth.exception';
 import { CryptoService } from './crypto.service';
@@ -11,56 +12,85 @@ import { TokenService } from './token.service';
 
 export class AuthService {
   private readonly userRepository = infrastructure.repositories.user
-  public async registerUser(user: IUser): Promise<IUserWithOmittedData> {
-    if (!user.password) throw new DomainException(authException['invalid-password']);
+
+  public async registerUser(user: IUser): Promise<HasError<IUserWithOmittedData>> {
+    if (!user.password) {
+      return { error: authException['invalid-password'] };
+    }
+
     const emailExists = await this.userRepository.exists({ email: user.email });
-    if (emailExists) throw new DomainException(authException['email-already-exists']);
+    if (emailExists) {
+      return { error: authException['email-already-exists'] };
+    }
+
     const cryptoService = new CryptoService();
     user.salt = await cryptoService.genSalt();
     user.password = await cryptoService.hash(user.password, user.salt);
     const createdUser = await this.userRepository.create(user);
-    return this.cleanUserSensitiveData(createdUser);
+
+    return { result: this.cleanUserSensitiveData(createdUser) }
   }
-  public async login({ email, password }: ICredentials): Promise<{ token: string }> {
+
+  public async login(credential: ICredentials): Promise<HasError<{ token: string }>> {
+    const { email, password } = credential;
     await this.handleLoginSensitiveData(email, password);
-    password = null;
+    credential.password = null;
+
     const user = await this.userRepository.findOne({ email });
-    if (user === null) throw new DomainException(userException['user-by-email-not-found']);
+    if (!user) {
+      return { error: userException['user-by-email-not-found'] };
+    }
+
     const tokenService = new TokenService();
     const token = await tokenService.generateToken({ ...user });
-    return { token };
+    return { result: { token } };
   }
+
   public async generateToken(user: IUserWithOmittedData) {
     const tokenService = new TokenService();
     return tokenService.generateToken(user);
   }
+
   private async handleLoginSensitiveData(
     email: string,
     unhashedPassword: string | null
-  ): Promise<void | never> {
-    if (!unhashedPassword) throw new DomainException(authException['invalid-credentials']);
+  ): Promise<HasError<undefined>> {
+    if (!unhashedPassword) {
+      return { error: authException['invalid-credentials'] };
+    }
+
     let userWithSensitiveData = await this.userRepository.findOne(
       { email },
       { select: <IObjectBoolean<IUser>>{ email: true, salt: true, password: true } }
     );
-    if (!userWithSensitiveData) throw new DomainException(authException['user-email-not-found']);
-    if (!userWithSensitiveData.password || !userWithSensitiveData.salt) {
-      throw new DomainException();
+
+    if (!userWithSensitiveData) {
+      return { error: authException['user-email-not-found'] };
     }
+    if (!userWithSensitiveData.password || !userWithSensitiveData.salt) {
+      return { error: domainException['internal-server-error'] };
+    }
+
     const cryptoService = new CryptoService();
     const isPasswordCorrect = await cryptoService.compareUserPasswords(
       unhashedPassword,
       userWithSensitiveData
     );
-    if (!isPasswordCorrect) throw new DomainException(authException['invalid-credentials']);
+    if (!isPasswordCorrect) {
+      return { error: authException['invalid-credentials'] };
+    }
+
     unhashedPassword = null;
     this.deleteUserSensitiveData(userWithSensitiveData);
+    return { result: undefined }
   }
+
   private deleteUserSensitiveData(mutUser: Partial<IUser>): void {
     delete mutUser.password;
     delete mutUser.salt;
     delete mutUser.person?.cpf;
   }
+
   private cleanUserSensitiveData(user: Partial<IUser>): IUserWithOmittedData {
     const safeUser = { ...user };
     this.deleteUserSensitiveData(safeUser);

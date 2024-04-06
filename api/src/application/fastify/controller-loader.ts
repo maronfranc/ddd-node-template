@@ -41,7 +41,8 @@ export class ControllerLoader {
       const route = Reflect.getMetadata(methodName, controller) as IEndpoint;
       const httpVerb = this.mapEnumToFunctionName(route.method);
       const routePath = addMissingSlashToPath(route.path);
-      this.logger?.info(`\t- Endpoint | ${httpVerb.padEnd(5)}| loaded: ${path}${routePath ? routePath : '<root>'}`);
+      const completePath = `${this.basePrefix}${path}${routePath}`;
+      this.logger?.info(`\t- Endpoint | ${httpVerb.padEnd(5)}| loaded: ${completePath}`);
       if (typeof app[httpVerb] !== "function") {
         throw new Error(
           `Error loading fastify function.
@@ -52,7 +53,6 @@ export class ControllerLoader {
       const controllerMethodRoute = this.controllerMethodWrapper(
         controller,
         methodName);
-      const completePath = `${this.basePrefix}${path}${routePath}`;
 
       app[httpVerb](
         completePath,
@@ -69,13 +69,15 @@ export class ControllerLoader {
     methodName: string,
   ): FastifyRouteFunction {
     return async (req, res, next) => {
-      const params = getDecoratedParams({
+      const { error, result: params } = getDecoratedParams({
         controller,
         methodName,
         req,
         res,
         next,
       });
+      if (error) return next(error);
+
       const response = await controller[methodName](...params);
       return res.send(response);
     }

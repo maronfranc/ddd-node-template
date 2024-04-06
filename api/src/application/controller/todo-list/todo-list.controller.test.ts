@@ -22,7 +22,6 @@ describe(TodoListController.name, () => {
     if (!application.testApp) {
       throw new Error("Undefined `application.testApp`");
     }
-    // await application.app.ready();
   });
   afterAll(async () => await infrastructure.close());
 
