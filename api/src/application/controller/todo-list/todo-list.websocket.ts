@@ -1,4 +1,5 @@
 import todoListService from "../../../domain/todo-list/todo-list.service";
+import todoListRepository from "../../../infrastructure/mongo/todo-list/todo-list.repository";
 import { Get } from "../../library/decorators";
 import { WsConnection } from "../../library/decorators/route-params";
 import { WebSocketGateway } from "../../library/decorators/websocket.decorator";
@@ -9,7 +10,7 @@ export class TodoListWebsocket {
   @Get('watch')
   async watch(@WsConnection() conn: WebSocket) {
     type OptionalStream = null
-      | ReturnType<(typeof todoListService)['watchChangesByIds']>;
+      | ReturnType<(typeof todoListRepository)['watchChangesByIds']>;
     let changeStream: OptionalStream = null;
     let watchlist: Set<string> = new Set();
 
@@ -36,7 +37,7 @@ export class TodoListWebsocket {
             return conn.close();
           }
 
-          changeStream = todoListService.watchChangesByIds([...watchlist]);
+          changeStream = todoListRepository.watchChangesByIds([...watchlist]);
           changeStream.on('change', async (data) => {
             const changeResponse = todoListService.handleChange(data);
             if (changeResponse) conn.send(JSON.stringify(changeResponse));

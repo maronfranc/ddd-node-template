@@ -1,9 +1,11 @@
+import { toBeEmptyObject } from "jest-extended";
 import { DomainException } from "../../../domain/library/exceptions/domain.exception";
 import { domainException } from "../../../domain/library/exceptions/exception-map";
 import { todoItemException } from "../../../domain/todo-list/todo-item/todo-item.exception";
 import todoListService from "../../../domain/todo-list/todo-list.service";
 import { ITodoItem } from "../../../infrastructure/entity-interfaces/todo-item.interface";
 import { ITodoList } from "../../../infrastructure/entity-interfaces/todo-list.interface";
+import todoListRepository from "../../../infrastructure/mongo/todo-list/todo-list.repository";
 import { TODO_ITEM_STATUS } from "../../../infrastructure/mongo/todo-list/todo-list.schema";
 import { Controller } from "../../library/decorators/controller.decorator";
 import { Get, Patch, Post, Delete } from "../../library/decorators/request-mapping.decorator";
@@ -17,13 +19,13 @@ import { validateUpdateTodoListDto } from "./dto/update-todo-list.dto";
 export class TodoListController {
   @Get()
   public async find() {
-    const todoLists = await todoListService.findMany({});
+    const todoLists = await todoListRepository.find({});
     return { todoLists }
   }
 
   @Get(':id')
   public async findById(@Param('id') id: string) {
-    const todoList = await todoListService.findById(id);
+    const todoList = await todoListRepository.findById(id);
     if (!todoList) {
       throw new DomainException(domainException['not-found']);
     }
@@ -32,7 +34,7 @@ export class TodoListController {
 
   @Get(':id/item/count')
   public async count(@Param('id') id: string) {
-    const result = await todoListService.countItemsStatus(id);
+    const result = await todoListRepository.countItemsStatus(id);
     return { count: result };
   }
 
@@ -41,7 +43,7 @@ export class TodoListController {
     const { error, result: dto } = validateCreateTodoListDto(body)
     if (error) throw new DomainException(error);
 
-    const todoList = await todoListService.create(dto);
+    const todoList = await todoListRepository.create(dto);
     return { todoList };
   }
 
@@ -50,7 +52,7 @@ export class TodoListController {
     const { error, result: dto } = validateUpdateTodoListDto(body);
     if (error) throw new DomainException(error);
 
-    const isUpdated = await todoListService.updateById(id, dto);
+    const isUpdated = await todoListRepository.updateById(id, dto);
     return {
       todoList: { id },
       updated: isUpdated,
@@ -59,7 +61,7 @@ export class TodoListController {
 
   @Delete(":id")
   public async delete(@Param('id') id: string) {
-    const isDeleted = await todoListService.delete(id)
+    const isDeleted = await todoListRepository.deleteById(id)
     return {
       todoList: { id },
       deleted: isDeleted,
@@ -81,7 +83,7 @@ export class TodoListController {
       return validDto;
     })
 
-    const items = await todoListService.createManyItems(id, dto)
+    const items = await todoListRepository.createItemsByIds(id, dto)
     return { todoList: { id, items } };
   }
 
@@ -102,8 +104,8 @@ export class TodoListController {
     }
 
     const ids = items.map((item) => item.id);
-    const isUpdated = await todoListService
-      .updateManyItemsStatus(id, ids, newStatus);
+    const isUpdated = await todoListRepository
+      .updateItemsStatusByIds(id, ids, newStatus);
     return {
       todoList: { id, itemIds: ids },
       updated: isUpdated,
@@ -122,7 +124,7 @@ export class TodoListController {
     }
 
     const ids = items.map((item) => item.id);
-    const isDeleted = await todoListService.deleteManyItemsByIds(id, ids);;
+    const isDeleted = await todoListRepository.deleteItemsByIds(id, ids);;
     return {
       todoList: { id, itemIds: ids },
       deleted: isDeleted,
