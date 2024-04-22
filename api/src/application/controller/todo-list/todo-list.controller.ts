@@ -1,16 +1,23 @@
-import { toBeEmptyObject } from "jest-extended";
 import { DomainException } from "../../../domain/library/exceptions/domain.exception";
 import { domainException } from "../../../domain/library/exceptions/exception-map";
 import { todoItemException } from "../../../domain/todo-list/todo-item/todo-item.exception";
-import todoListService from "../../../domain/todo-list/todo-list.service";
 import { ITodoItem } from "../../../infrastructure/entity-interfaces/todo-item.interface";
 import { ITodoList } from "../../../infrastructure/entity-interfaces/todo-list.interface";
 import todoListRepository from "../../../infrastructure/mongo/todo-list/todo-list.repository";
 import { TODO_ITEM_STATUS } from "../../../infrastructure/mongo/todo-list/todo-list.schema";
 import { Controller } from "../../library/decorators/controller.decorator";
-import { Get, Patch, Post, Delete } from "../../library/decorators/request-mapping.decorator";
+import {
+  Get,
+  Patch,
+  Post,
+  Delete
+} from "../../library/decorators/request-mapping.decorator";
 import { Body, Param } from "../../library/decorators/route-params";
-import { isFilledArray, isFilledArrayKey, isOneOf } from "../../library/utils/type-validator";
+import {
+  isFilledArray,
+  isFilledArrayKey,
+  isOneOf,
+} from "../../library/utils/type-validator";
 import { validateCreateTodoItemDto } from "./dto/create-item.dto";
 import { validateCreateTodoListDto } from "./dto/create-todo-list.dto";
 import { validateUpdateTodoListDto } from "./dto/update-todo-list.dto";

@@ -1,7 +1,5 @@
 import { IDomainException } from "../../domain/library/exceptions/domain.exception";
 import { IInitOption, ILogger, IWebsocketGateway } from "../application.interfaces";
-import { HealthcheckWebsocket } from "../controller/healthcheck/healthcheck.websocket";
-import { TodoListWebsocket } from "../controller/todo-list/todo-list.websocket";
 import { PATH_METADATA } from "../library/decorators";
 import { IEndpoint } from "../library/interfaces/endpoint.interface";
 import { addMissingSlashToPath } from "../library/utils/format";
@@ -11,20 +9,18 @@ import { FastifyApp, FastifyWebsocketFunction } from "./fastify.interface";
 export class WebsocketLoader {
   private basePrefix = '';
   private logger?: ILogger;
-
-  private WsGateways: IWebsocketGateway[] = [
-    HealthcheckWebsocket,
-    TodoListWebsocket,
-  ];
+  private WsGateways?: IWebsocketGateway[];
 
   public init(opt?: IInitOption): this {
     this.logger = opt?.logger;
     this.basePrefix = opt?.basePrefix ?? this.basePrefix;
+    this.WsGateways = opt?.websockets;
     return this;
   }
 
   /** loader to be run in fastify.register */
   public load(app: FastifyApp) {
+    if (!Array.isArray(this.WsGateways)) return;
     for (const Controller of this.WsGateways) {
       this.loadControllerRoutes(app, Controller);
     }
@@ -36,6 +32,7 @@ export class WebsocketLoader {
     controllerPath = addMissingSlashToPath(controllerPath);
     const path = `${this.basePrefix}${controllerPath}`;
     this.logger?.info(`- Loading routes: ${path ? path : '<root>'}`);
+
     const methodNames = Reflect.getMetadataKeys(gateway);
     for (const methodName of methodNames) {
       const route = Reflect.getMetadata(methodName, gateway) as IEndpoint;

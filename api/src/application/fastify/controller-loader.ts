@@ -1,7 +1,4 @@
 import { IController, IInitOption, ILogger } from "../application.interfaces";
-import { AuthController } from "../controller/auth/auth.controller";
-import { HealthcheckController } from "../controller/healthcheck/healthcheck.controller";
-import { TodoListController } from "../controller/todo-list/todo-list.controller";
 import { PATH_METADATA } from "../library/decorators";
 import { addMissingSlashToPath } from "../library/utils/format";
 import { IEndpoint } from "../library/interfaces/endpoint.interface";
@@ -12,20 +9,18 @@ import { getDecoratedParams } from "./fastify.application";
 export class ControllerLoader {
   private basePrefix = '';
   private logger?: ILogger
-  private Controllers: IController[] = [
-    AuthController,
-    HealthcheckController,
-    TodoListController,
-  ];
+  private Controllers?: IController[];
 
   public init(opt?: IInitOption): this {
     this.logger = opt?.logger;
     this.basePrefix = opt?.basePrefix ?? this.basePrefix;
+    this.Controllers = opt?.controllers;
     return this;
   }
 
   /** loader to be run in fastify.register */
   public load(app: FastifyApp) {
+    if (!Array.isArray(this.Controllers)) return;
     for (const Controller of this.Controllers) {
       this.loadControllerRoutes(app, Controller);
     }
@@ -33,9 +28,11 @@ export class ControllerLoader {
 
   private loadControllerRoutes(app: any, Controller: IController) {
     const controller = new Controller();
-    let path = Reflect.getMetadata(PATH_METADATA, Controller) as string;
+    let controllerPath = Reflect.getMetadata(PATH_METADATA, Controller) as string;
+    controllerPath = addMissingSlashToPath(controllerPath);
+    const path = `${this.basePrefix}${controllerPath}`;
     this.logger?.info(`- Loading routes: ${path ? path : '<root>'}`);
-    path = addMissingSlashToPath(path);
+
     const methodNames = Reflect.getMetadataKeys(controller);
     for (const methodName of methodNames) {
       const route = Reflect.getMetadata(methodName, controller) as IEndpoint;

@@ -77,9 +77,9 @@ export function getDecoratedParams({
     methodName);
   if (!methodMetadatas) return { result: [] };
 
-  /** Decorator loads params in reverse order .*/
   let reverseIndex = methodMetadatas.length - 1;
   const params: any[] = [];
+  /** Decorator loads params in reverse order .*/
   for (reverseIndex; reverseIndex >= 0; reverseIndex--) {
     const [paramTagEnum, paramName] = methodMetadatas[reverseIndex];
 
@@ -95,7 +95,7 @@ export function getDecoratedParams({
       params.push(conn);
     } else if (paramName) {
       const { error, result: param } = mapTagToReqParam(paramTagEnum);
-      if (error) return { error }
+      if (error) return { error };
 
       const reqMap = req[param] as Record<string, string>;
       params.push(reqMap[paramName]);

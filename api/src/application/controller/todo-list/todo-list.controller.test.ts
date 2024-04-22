@@ -3,7 +3,7 @@ import 'reflect-metadata';
 import supertest from "supertest";
 import { configuration } from "../../../environment";
 import infrastructure from "../../../infrastructure/Infrastructure";
-import application from "../../application";
+import application, { appControllers } from "../../application";
 import { HttpStatus } from '../../library/http/http-status.enum';
 import { ITodoItem } from '../../../infrastructure/entity-interfaces/todo-item.interface';
 import { isFilledArrayKey } from '../../library/utils/type-validator';
@@ -17,8 +17,7 @@ describe(TodoListController.name, () => {
       throw new Error(`Attempted to test in a forbidden environment: ${configuration.build}`)
     }
     await infrastructure.init();
-    await application.init();
-    (application as any).Controllers = [TodoListController];
+    await application.init({ controllers: appControllers });
     if (!application.testApp) {
       throw new Error("Undefined `application.testApp`");
     }

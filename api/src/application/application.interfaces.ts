@@ -4,6 +4,8 @@ export type IWebsocketGateway = { new(): any };
 export interface IInitOption {
   logger?: ILogger;
   basePrefix?: string;
+  controllers?: IController[];
+  websockets?:IWebsocketGateway[];
 }
 
 export interface ILogger {
